@@ -174,3 +174,19 @@ export const googleCallback = asyncHandler(async (req: Request, res: Response, n
     // Redirect to page where frontend can request access token via cookie
     res.redirect(`${process.env.FRONTEND_URL}/oauth-success`);
 });
+
+
+export const me = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+    const userId = (req as any).user.userId;
+    const user_db = await db.select().from(users).where(eq(users.id, userId)).limit(1);
+    const user = user_db[0];
+    res.status(200).json({
+        success: true,
+        message: 'Valid User',
+        user: {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+        }
+    });
+});

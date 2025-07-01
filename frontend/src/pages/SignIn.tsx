@@ -8,11 +8,11 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2, LogIn, Chrome, Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '@/stores/authStore';
 import { authApi } from '@/services/authApi';
 import { loginSchema, type LoginFormData } from '@/lib/validations/auth';
+import AuthLayout from '@/layouts/AuthLayout';
 
 export default function SignIn() {
     const navigate = useNavigate();
@@ -33,7 +33,7 @@ export default function SignIn() {
     });
 
     const loginMutation = useMutation({
-        mutationFn: authApi.login,
+        mutationFn: authApi.signin,
         onSuccess: (data) => {
             setAuth(data.user, data.accessToken);
             toast.success('Welcome back!');
@@ -61,134 +61,129 @@ export default function SignIn() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4">
-            <Card className="w-full max-w-md shadow-lg">
-                <CardHeader className="text-center">
-                    <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
-                    <CardDescription>
-                        Sign in to your account to continue
-                    </CardDescription>
-                </CardHeader>
+        <AuthLayout
 
-                <CardContent className="space-y-6">
+            title='Welcome Back'
+            description='Sign in to your account to continue'
+        >
 
-
-
-
-                    {/* Login Form */}
-                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input
-                                id="email"
-                                type="email"
-                                placeholder="Enter your email"
-                                {...register('email')}
-                                className={errors.email ? 'border-red-500 focus-visible:ring-red-500' : ''}
-                                disabled={loginMutation.isPending}
-                            />
-                            {errors.email && (
-                                <p className="text-sm text-red-500">{errors.email.message}</p>
-                            )}
-                        </div>
-
-                        <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
-                            <div className="relative">
-                                <Input
-                                    id="password"
-                                    type={showPassword ? 'text' : 'password'}
-                                    placeholder="Enter your password"
-                                    {...register('password')}
-                                    className={errors.password ? 'border-red-500 focus-visible:ring-red-500 pr-10' : 'pr-10'}
-                                    disabled={loginMutation.isPending}
-                                />
-                                <Button
-                                    type="button"
-                                    variant="ghost"
-                                    size="sm"
-                                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    disabled={loginMutation.isPending}
-                                >
-                                    {showPassword ? (
-                                        <EyeOff className="h-4 w-4" />
-                                    ) : (
-                                        <Eye className="h-4 w-4" />
-                                    )}
-                                </Button>
-                            </div>
-                            {errors.password && (
-                                <p className="text-sm text-red-500">{errors.password.message}</p>
-                            )}
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                            <Link
-                                to="/forgot-password"
-                                className="text-sm text-blue-600 hover:underline"
-                            >
-                                Forgot password?
-                            </Link>
-                        </div>
-
-                        <Button
-                            type="submit"
-                            className="w-full"
-                            disabled={loginMutation.isPending || isGoogleLoading}
-                        >
-                            {loginMutation.isPending ? (
-                                <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Signing in...
-                                </>
-                            ) : (
-                                <>
-                                    <LogIn className="mr-2 h-4 w-4" />
-                                    Sign In
-                                </>
-                            )}
-                        </Button>
-
-                    </form>
-
-                    {/* Divider */}
-                    <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
-                        </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="bg-white px-2 text-muted-foreground">
-                                Or 
-                            </span>
-                        </div>
+            {/* Children Prop */}
+            <div>
+                {/* Login Form */}
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                            id="email"
+                            type="email"
+                            placeholder="Enter your email"
+                            {...register('email')}
+                            className={errors.email ? 'border-red-500 focus-visible:ring-red-500' : ''}
+                            disabled={loginMutation.isPending}
+                        />
+                        {errors.email && (
+                            <p className="text-sm text-red-500">{errors.email.message}</p>
+                        )}
                     </div>
 
-                    {/* Google Login Button */}
-                    <Button
-                        variant="outline"
-                        className="w-full cursor-pointer"
-                        onClick={handleGoogleLogin}
-                        disabled={isGoogleLoading || loginMutation.isPending}
-                    >
-                        {isGoogleLoading ? (
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        ) : (
-                            <Chrome className="mr-2 h-4 w-4" />
+                    <div className="space-y-2">
+                        <Label htmlFor="password">Password</Label>
+                        <div className="relative">
+                            <Input
+                                id="password"
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="Enter your password"
+                                {...register('password')}
+                                className={errors.password ? 'border-red-500 focus-visible:ring-red-500 pr-10' : 'pr-10'}
+                                disabled={loginMutation.isPending}
+                            />
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                                onClick={() => setShowPassword(!showPassword)}
+                                disabled={loginMutation.isPending}
+                            >
+                                {showPassword ? (
+                                    <EyeOff className="h-4 w-4" />
+                                ) : (
+                                    <Eye className="h-4 w-4" />
+                                )}
+                            </Button>
+                        </div>
+                        {errors.password && (
+                            <p className="text-sm text-red-500">{errors.password.message}</p>
                         )}
-                        Continue with Google
-                    </Button>
-                </CardContent>
+                    </div>
 
-                <CardFooter className="justify-center">
-                    <p className="text-sm text-muted-foreground">
-                        Don't have an account?{' '}
-                        <Link to="/signup" className="font-medium text-blue-600 hover:underline">
-                            Sign up
+                    <div className="flex items-center justify-between">
+                        <Link
+                            to="/forgot-password"
+                            className="text-sm text-blue-600 hover:underline"
+                        >
+                            Forgot password?
                         </Link>
-                    </p>
-                </CardFooter>
-            </Card>
-        </div>
+                    </div>
+
+                    <Button
+                        type="submit"
+                        className="w-full"
+                        disabled={loginMutation.isPending || isGoogleLoading}
+                    >
+                        {loginMutation.isPending ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Signing in...
+                            </>
+                        ) : (
+                            <>
+                                <LogIn className="mr-2 h-4 w-4" />
+                                Sign In
+                            </>
+                        )}
+                    </Button>
+
+                </form>
+
+                {/* Divider */}
+                <div className="relative my-4">
+                    <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                        <span className="bg-white px-2 text-muted-foreground">
+                            Or
+                        </span>
+                    </div>
+                </div>
+
+                {/* Google Login Button */}
+                <Button
+                    variant="outline"
+                    className="w-full cursor-pointer"
+                    onClick={handleGoogleLogin}
+                    disabled={isGoogleLoading || loginMutation.isPending}
+                >
+                    {isGoogleLoading ? (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                        <Chrome className="mr-2 h-4 w-4" />
+                    )}
+                    Continue with Google
+                </Button>
+            </div>
+
+
+            {/* Footer Prop */}
+            <div>
+                <p className="text-sm text-muted-foreground text-center">
+                    Don't have an account?{' '}
+                    <Link to="/signup" className="font-medium text-blue-600 hover:underline">
+                        Sign up
+                    </Link>
+                </p>
+            </div>
+        </AuthLayout >
     );
 }

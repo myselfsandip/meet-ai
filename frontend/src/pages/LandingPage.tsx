@@ -7,8 +7,8 @@ function LandingPage() {
         <div className="flex flex-col gap-8">
             Landing Page
 
-            <Button onClick={() => navigate('/sign-up')}>Sign Up</Button>
-            <Button onClick={() => navigate('/sign-in')}>Sign In</Button>
+            <Button onClick={() => navigate('/signup')}>Sign Up</Button>
+            <Button onClick={() => navigate('/signin')}>Sign In</Button>
         </div>
     </div>);
 }

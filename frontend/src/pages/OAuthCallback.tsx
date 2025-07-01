@@ -26,7 +26,6 @@ export default function OAuthCallback() {
     });
 
     useEffect(() => {
-        // Trigger the refresh token call to get user data
         refreshMutation.mutate();
     }, []);
 
