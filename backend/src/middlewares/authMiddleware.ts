@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { verifyToken } from "../utils/jwtTokens";
+import { verifyAccessToken } from "../utils/jwtTokens";
 import asyncHandler from "express-async-handler";
 
 export default asyncHandler(async function (req: Request, res: Response, next: NextFunction) {
@@ -13,7 +13,7 @@ export default asyncHandler(async function (req: Request, res: Response, next: N
             return;
         }
         const accessToken = authHeader.split(" ")[1];
-        const payload = verifyToken(accessToken);
+        const payload = verifyAccessToken(accessToken);
         req.user = { userId: payload.userId };
         next();
     } catch (error) {

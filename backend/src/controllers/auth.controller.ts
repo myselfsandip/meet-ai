@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import bcrypt from "bcrypt";
 import { db } from "../db"
 import { signInSchema, signUpSchema } from '../types/auth';
-import { generateAccessToken, generateRefreshToken, verifyToken } from '../utils/jwtTokens';
+import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwtTokens';
 import { users } from '../db/schema';
 
 
@@ -104,7 +104,7 @@ export const signIn = asyncHandler(async (req: Request, res: Response, next: Nex
 export const logout = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
     const refreshToken = req.cookies.refreshToken;
     if (refreshToken) {
-        const payload = verifyToken(refreshToken);
+        const payload = verifyRefreshToken(refreshToken);
         await db.update(users).set({ refreshToken: null }).where(eq(users.id, payload.userId));
     }
     res.clearCookie('refreshToken');
@@ -122,7 +122,7 @@ export const refresh = asyncHandler(async (req: Request, res: Response, next: Ne
         res.status(401).json({ success: false, message: 'Refresh token required' });
         return;
     }
-    const payload = verifyToken(token);
+    const payload = verifyRefreshToken(token);
 
     if (!payload.userId) {
         res.status(401).json({

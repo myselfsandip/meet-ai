@@ -15,9 +15,9 @@ router.get('/health', (req, res) => {
 });
 router.post('/signup', authController.signUp);
 router.post('/signin', authController.signIn);
-router.post('/refresh', authController.signUp);
-router.post('/me', authMiddleware , authController.me);
-router.post('/logout', authController.signUp);
+router.get('/refresh', authController.refresh);
+router.post('/logout', authController.logout);
+router.get('/me', authMiddleware, authController.me);
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'], failureRedirect: '/signin' }));
 router.get('/google/callback', passport.authenticate('google', { session: false }), authController.googleCallback);
 
