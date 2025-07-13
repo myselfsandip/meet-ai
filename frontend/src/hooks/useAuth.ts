@@ -34,7 +34,7 @@ const useAuth = () => {
                 throw new Error('No access token');
             }
             try {
-                return await authApi.verifyToken();
+                return await authApi.me();
             } catch (verifyError) {
                 try {
                     return await authApi.refreshToken();

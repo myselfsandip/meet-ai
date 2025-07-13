@@ -8,6 +8,7 @@ import passport from "passport"
 
 
 import auth from "./routes/auth";
+import agentsRoutes from "./routes/agents";
 import { errorHandler } from "./middlewares/errorHandler";
 import { configurePassport } from "./config/passport";
 
@@ -27,6 +28,7 @@ configurePassport();
 
 
 app.use("/api/auth", auth);
+app.use("/api/agents", agentsRoutes);
 
 
 // Error Handler

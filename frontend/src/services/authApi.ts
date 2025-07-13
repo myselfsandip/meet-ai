@@ -35,7 +35,7 @@ export const authApi = {
         return response.data;
     },
 
-    verifyToken: async (): Promise<AuthResponse> => {
+    me: async (): Promise<AuthResponse> => {
         const accessToken = useAuthStore.getState().accessToken;
         if (!accessToken) {
             throw new Error('No access token available');

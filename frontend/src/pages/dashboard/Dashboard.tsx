@@ -1,12 +1,11 @@
-import LogoutButton from "@/components/custom/LogoutButton";
 import DashboardLayout from "@/layouts/DashboardLayout";
+import DashboardContent from "./DashboardContent";
 
 
 function Dashboard() {
     return (
         <DashboardLayout>
-            Logged in As Person
-            <LogoutButton />
+            <DashboardContent/>
         </DashboardLayout>
     );
 }

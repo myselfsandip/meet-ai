@@ -3,7 +3,7 @@ import asyncHandler from "express-async-handler";
 import { eq } from 'drizzle-orm';
 import bcrypt from "bcrypt";
 import { db } from "../db"
-import { signInSchema, signUpSchema } from '../types/auth';
+import { signInSchema, signUpSchema } from '../validations/auth';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwtTokens';
 import { users } from '../db/schema';
 
@@ -160,7 +160,7 @@ export const refresh = asyncHandler(async (req: Request, res: Response, next: Ne
 });
 
 
-export const googleCallback = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
+export const googleCallback = asyncHandler(async (req: Request, res: Response) => {
     const user = (req as any).user;
     const existingUser = await db.select().from(users).where(eq(users.id, user.id)).limit(1);
     const refreshToken = generateRefreshToken(existingUser[0].id);
