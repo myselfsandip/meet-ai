@@ -12,15 +12,15 @@ import { users } from '../db/schema';
 
 
 export const signUp = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const { success } = signUpSchema.safeParse(req.body);
-    if (!success) {
+    const parsedPayload = signUpSchema.safeParse(req.body);
+    if (!parsedPayload.success) {
         res.status(400).json({
             success: false,
             message: 'Invalid Credentials'
         });
         return;
     }
-    const { name, email, password } = req.body;
+    const { name, email, password } = parsedPayload.data;
     const existingUser = await db.select().from(users).where(eq(users.email, email)).limit(1);
     if (existingUser[0]) {
         res.status(400).json({
@@ -54,15 +54,15 @@ export const signUp = asyncHandler(async (req: Request, res: Response, next: Nex
 
 
 export const signIn = asyncHandler(async (req: Request, res: Response, next: NextFunction) => {
-    const { success } = signInSchema.safeParse(req.body);
-    if (!success) {
+    const parsedPayload = signInSchema.safeParse(req.body);
+    if (!parsedPayload.success) {
         res.status(400).json({
             success: false,
             message: 'Invalid Credentials'
         });
         return;
     }
-    const { email, password } = req.body;
+    const { email, password } = parsedPayload.data;
     const user = await db.select().from(users).where(eq(users.email, email)).limit(1);
     if (!user[0]) {
         res.status(404).json({

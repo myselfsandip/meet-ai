@@ -1,23 +1,6 @@
 import { useAuthStore } from '@/stores/authStore';
-import type { AuthResponse, LoginResponse, RefreshResponse, SignInCredentials, SignUpCredentials, SignUpResponse } from '@/types/auth';
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:3000';
-
-
-
-const apiClient = axios.create({
-    baseURL: API_BASE_URL,
-    withCredentials: true,
-});
-
-apiClient.interceptors.request.use((config) => {
-    const accessToken = useAuthStore.getState().accessToken;
-    if (accessToken) {
-        config.headers.Authorization = `Bearer ${accessToken}`;
-    }
-    return config;
-});
+import type { AuthResponse, LoginResponse, RefreshResponse, SignInCredentials, SignUpCredentials, SignUpResponse } from "@/types/auth";
+import apiClient, { API_BASE_URL } from './apiClient';
 
 export const authApi = {
     signin: async (credentials: SignInCredentials): Promise<LoginResponse> => {

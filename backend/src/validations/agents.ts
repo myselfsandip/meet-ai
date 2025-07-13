@@ -13,8 +13,8 @@ export type agentsDBResponseType = z.infer<typeof agentDBResponseSchema>;
 
 
 export const agentsInsertSchema = z.object({
-    name: z.string().min(1,{message: "Name is required"}),
-    instructions: z.string().min(1,{message: "Instructions is required"})
+    name: z.string().min(1,{message: "Name is required"}).trim(),
+    instructions: z.string().min(1,{message: "Instructions is required"}).trim()
 });
 
 

@@ -4,11 +4,12 @@ import { agents } from "../db/schema"
 import asyncHandler from 'express-async-handler';
 import { agentDBResponseSchema, agentsDBResponseArraySchema, agentsInsertSchema, agentsInsertType } from '../validations/agents';
 import { ApiResponse } from '../types/api';
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 
 export const getAgents = asyncHandler(async (req: Request, res: Response<ApiResponse>) => {
     // await new Promise(resolve => setTimeout(resolve, 5000));  //Custom Delay
-    const data = await db.select().from(agents);
+    const userId = (req as any).user.userId;
+    const data = await db.select().from(agents).where(eq(agents.userId, userId));
     const parsedpayload = agentsDBResponseArraySchema.safeParse(data);
     if (!parsedpayload.success) {
         res.status(400).json({
@@ -26,13 +27,13 @@ export const getAgents = asyncHandler(async (req: Request, res: Response<ApiResp
     });
 });
 
-export const getAgent = asyncHandler(async (req: Request, res: Response<ApiResponse>) => {
-    // await new Promise(resolve => setTimeout(resolve, 5000));  //Custom Delay
-    const {id : agentId} = req.params;
-    const [data] = await db.select().from(agents).where(eq(agents.id,agentId)).orderBy(desc(agents.createdAt)).limit(1);
-    if(!data){
+export const getOneAgent = asyncHandler(async (req: Request, res: Response<ApiResponse>) => {
+    const { id: agentId } = req.params;
+    const userId = (req as any).user.userId;
+    const [data] = await db.select().from(agents).where(and(eq(agents.id, agentId), eq(agents.userId, userId))).orderBy(desc(agents.createdAt)).limit(1);
+    if (!data) {
         res.status(404).json({
-            success:false,
+            success: false,
             message: 'Agent Not Found'
         });
         return;
@@ -60,11 +61,12 @@ export const createAgent = asyncHandler(async (req: Request, res: Response<ApiRe
     if (!parsedpayload.success) {
         res.status(400).json({
             success: false,
-            message: parsedpayload.error.errors?.map(e => e.message)
+            message: "Invalid Credentials",
+            errors: parsedpayload.error.flatten().fieldErrors
         });
         return;
     }
-    const { name, instructions }: agentsInsertType = req.body;
+    const { name, instructions }: agentsInsertType = parsedpayload.data;
     const userId = (req as any).user.userId;
     const [data] = await db.insert(agents).values({
         name,

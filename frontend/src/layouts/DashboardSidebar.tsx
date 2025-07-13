@@ -12,9 +12,9 @@ import { agentsApi } from "@/services/agentsApi";
 function DashboardSidebar() {
     const location = useLocation();
     const pathname = location.pathname;
+    const queryClient = useQueryClient();
 
     const handleAgentsPreFetch = () => {
-        const queryClient = useQueryClient();
         queryClient.prefetchQuery({
             queryKey: ['agents'],
             queryFn: agentsApi.getAgents

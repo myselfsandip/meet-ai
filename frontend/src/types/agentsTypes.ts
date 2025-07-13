@@ -1,4 +1,4 @@
-export interface Agent {
+export interface AgentInterface {
     id: string,
     name: string,
     userId: Number,
@@ -8,8 +8,13 @@ export interface Agent {
 }
 
 export interface GetAgentsResponse{
-    data: Agent[]
+    data: AgentInterface[]
 }
 export interface AgentGetOneResponse{
-    data: Agent
+    data: AgentGetOneResponse
+}
+
+export interface createAgentCredentials {
+    name: string;
+    instructions: string;
 }
