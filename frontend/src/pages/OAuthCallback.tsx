@@ -15,7 +15,7 @@ export default function OAuthCallback() {
         onSuccess: (data) => {
             setAuth(data.user, data.token);
             toast.success('Google login successful!');
-            navigate('/dashboard');
+            navigate('/overview');
         },
         onError: (error: any) => {
             console.error('OAuth callback error:', error);

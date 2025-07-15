@@ -1,13 +1,13 @@
 import DashboardLayout from "@/layouts/DashboardLayout";
-import DashboardContent from "./DashboardContent";
+import OverviewContent from "./OverviewContent";
 
 
-function Dashboard() {
+function Overview() {
     return (
         <DashboardLayout>
-            <DashboardContent/>
+            <OverviewContent />
         </DashboardLayout>
     );
 }
 
-export default Dashboard;
+export default Overview;

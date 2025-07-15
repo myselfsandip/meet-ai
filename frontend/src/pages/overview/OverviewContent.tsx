@@ -1,6 +1,6 @@
 import LogoutButton from "@/components/custom/LogoutButton";
 
-function DashboardContent() {
+function OverviewContent() {
     return (
         <div className="flex flex-col px-4">
             <div className="mb-5">
@@ -12,4 +12,4 @@ function DashboardContent() {
     );
 }
 
-export default DashboardContent;
+export default OverviewContent;

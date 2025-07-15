@@ -5,7 +5,6 @@ function Agents() {
 
     return (
         <DashboardLayout>
-
             <AgentsContent />
         </DashboardLayout>
     );

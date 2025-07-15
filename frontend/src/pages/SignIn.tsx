@@ -36,7 +36,7 @@ export default function SignIn() {
         onSuccess: (data) => {
             setAuth(data.user, data.accessToken);
             toast.success('Welcome back!');
-            navigate('/dashboard');
+            navigate('/overview');
         },
         onError: (error: any) => {
             const errorMessage = error.response?.data?.message || 'Login failed. Please try again.';

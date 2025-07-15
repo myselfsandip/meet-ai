@@ -37,7 +37,7 @@ function SignUp() {
         onSuccess: (data) => {
             setAuth(data.user, data.accessToken);
             toast('Welcome!');
-            navigate('/dashboard');
+            navigate('/overview');
         },
         onError: (err) => {
             const errorMessage = err.message ? err.message : 'Sign Up failed. Please try again.';

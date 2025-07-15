@@ -5,7 +5,7 @@ const useAgents = () => {
     return useSuspenseQuery({
         queryKey: ['agents'],
         queryFn: agentsApi.getAgents
-    })
+    }).data
 }
 
 export default useAgents;

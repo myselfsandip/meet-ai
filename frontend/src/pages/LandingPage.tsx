@@ -9,7 +9,7 @@ function LandingPage() {
 
             <Button onClick={() => navigate('/signup')}>Sign Up</Button>
             <Button onClick={() => navigate('/signin')}>Sign In</Button>
-            <Button onClick={() => navigate('/dashboard')}>Dashboard</Button>
+            <Button onClick={() => navigate('/overview')}>Dashboard</Button>
         </div>
     </div>);
 }

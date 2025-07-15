@@ -1,4 +1,4 @@
-import { BotIcon, LayoutDashboard, StarIcon, VideoIcon } from "lucide-react";
+import { BotIcon, HomeIcon, StarIcon, VideoIcon } from "lucide-react";
 import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "../components/ui/sidebar";
 import { Link, useLocation } from "react-router-dom";
 import { Separator } from "../components/ui/separator";
@@ -23,9 +23,9 @@ function DashboardSidebar() {
 
     const firstSection = [
         {
-            icon: LayoutDashboard,
-            label: "Dashboard",
-            href: "/dashboard"
+            icon: HomeIcon,
+            label: "Overview",
+            href: "/overview"
         },
         {
             icon: VideoIcon,
