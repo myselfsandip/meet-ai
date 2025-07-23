@@ -7,9 +7,13 @@ export interface AgentModel { // Agent model
     updatedAt: string;
 }
 
+export interface AgentListItemModel extends AgentModel {
+    meetingCount: number;
+}
+
 // Response when fetching all agents
 export interface AgentsListResponse {
-    data: AgentModel[];
+    data: AgentListItemModel[];
 }
 
 // Response when fetching one agent

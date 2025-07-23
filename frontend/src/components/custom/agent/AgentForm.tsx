@@ -1,6 +1,6 @@
 import { agentsInsertSchema, type agentInsertFormData } from "@/lib/validations/agents";
 import { agentsApi } from "@/services/agentsApi";
-import type { AgentInterface } from "@/types/agentsTypes";
+import type { AgentModel } from "@/types/agentsTypes";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
@@ -14,7 +14,7 @@ import { toast } from "sonner";
 interface AgentFormProps {
     onSuccess?: () => void;
     onCancel?: () => void;
-    initialValues?: AgentInterface;
+    initialValues?: AgentModel;
 }
 
 

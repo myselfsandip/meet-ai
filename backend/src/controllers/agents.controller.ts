@@ -2,20 +2,53 @@ import { Request, Response } from 'express';
 import { db } from "../db"
 import { agents } from "../db/schema"
 import asyncHandler from 'express-async-handler';
-import { agentDBResponseSchema, agentsDBResponseArraySchema, agentsInsertSchema, agentsInsertType } from '../validations/agents';
+import { agentDBResponseSchema, agentsDBResponseArraySchema, agentsInsertSchema, agentsInsertType, agentsQuerySchema } from '../validations/agents';
 import { ApiResponse } from '../types/api';
-import { and, desc, eq } from 'drizzle-orm';
+import { and, count, desc, eq, getTableColumns, ilike, sql } from 'drizzle-orm';
+import { formatZodErrors } from '../utils/formatZodError';
+import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '../utils/constants';
 
-export const getAgents = asyncHandler(async (req: Request, res: Response<ApiResponse>) => {
+export const getAgents = asyncHandler(async (req: Request, res: Response) => {
     // await new Promise(resolve => setTimeout(resolve, 5000));  //Custom Delay
     const userId = (req as any).user.userId;
-    const data = await db.select().from(agents).where(eq(agents.userId, userId));
+    const queryValidation = agentsQuerySchema.safeParse(req.query);
+
+    if (!queryValidation.success) {
+        res.status(400).json({
+            success: false,
+            message: "Invalid Data",
+            errors: formatZodErrors(queryValidation.error)
+        });
+    }
+
+    const { page = DEFAULT_PAGE, pageSize = DEFAULT_PAGE_SIZE, search } = queryValidation.data ?? {};
+
+    const whereClause = and(
+        eq(agents.userId, userId),
+        search ? ilike(agents.name, `%${search}%`) : undefined
+    );
+
+    const data = await db.select({
+        ...getTableColumns(agents),
+        meetingCount: sql<number>`5`,
+    }).from(agents).
+        where(whereClause).
+        orderBy(desc(agents.createdAt), desc(agents.id))
+        .limit(pageSize)
+        .offset((page - 1) * pageSize)
+
+    const [total] = await db.select({
+        count: count()
+    }).from(agents).where(whereClause);
+
+    const totalPages = Math.ceil(total.count / pageSize);
+
     const parsedpayload = agentsDBResponseArraySchema.safeParse(data);
     if (!parsedpayload.success) {
         res.status(400).json({
             success: false,
             message: "Invalid Data",
-            errors: (process.env.NODE_ENV === 'production' ? null : parsedpayload.error.errors?.map(e => e.message))
+            errors: formatZodErrors(parsedpayload.error)
         });
         return;
     }
@@ -23,7 +56,9 @@ export const getAgents = asyncHandler(async (req: Request, res: Response<ApiResp
     res.status(200).json({
         success: true,
         message: "Agents fetched successfully",
-        data: parsedpayload.data
+        data: parsedpayload.data,
+        total: total.count,
+        totalPages
     });
 });
 
@@ -43,7 +78,7 @@ export const getOneAgent = asyncHandler(async (req: Request, res: Response<ApiRe
         res.status(400).json({
             success: false,
             message: "Invalid Data",
-            errors: (process.env.NODE_ENV === 'production' ? null : parsedpayload.error.errors?.map(e => e.message))
+            errors: formatZodErrors(parsedpayload.error)
         });
         return;
     }
