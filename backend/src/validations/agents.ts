@@ -23,8 +23,8 @@ export const agentsInsertSchema = z.object({
 });
 
 export const agentspaginationSchema = z.object({
-    page: z.number().default(DEFAULT_PAGE),
-    pageSize: z.number().min(MIN_PAGE_SIZE).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE)
+    page: z.coerce.number().default(DEFAULT_PAGE),
+    pageSize: z.coerce.number().min(MIN_PAGE_SIZE).max(MAX_PAGE_SIZE).default(DEFAULT_PAGE_SIZE)
 })
 
 export const agentsQuerySchema = agentspaginationSchema.extend({

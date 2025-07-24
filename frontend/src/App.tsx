@@ -3,6 +3,8 @@ import AppRouter from "./routes/AppRouter"
 import { Suspense } from "react"
 import CustomLoader from "./components/custom/CustomLoader"
 import { Toaster } from "sonner"
+import { NuqsAdapter } from 'nuqs/adapters/react-router/v7'
+
 
 
 function App() {
@@ -10,11 +12,13 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        {/* <Suspense fallback={<CustomLoader />}> */}
-        <AppRouter />
-        {/* Required for sonner to display toasts */}
-        <Toaster position="top-right" richColors />
-        {/* </Suspense> */}
+        <NuqsAdapter>
+          {/* <Suspense fallback={<CustomLoader />}> */}
+          <AppRouter />
+          {/* Required for sonner to display toasts */}
+          <Toaster position="top-right" richColors />
+          {/* </Suspense> */}
+        </NuqsAdapter>
       </BrowserRouter>
     </>
   )

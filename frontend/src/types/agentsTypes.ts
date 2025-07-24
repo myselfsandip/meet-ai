@@ -14,6 +14,8 @@ export interface AgentListItemModel extends AgentModel {
 // Response when fetching all agents
 export interface AgentsListResponse {
     data: AgentListItemModel[];
+    total: number;
+    totalPages: number;
 }
 
 // Response when fetching one agent
@@ -25,4 +27,10 @@ export interface AgentDetailResponse {
 export interface CreateAgentDTO {
     name: string;
     instructions: string;
+}
+
+
+export interface AgentsFilters {
+    search: string;
+    page: number;
 }
