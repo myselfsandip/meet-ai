@@ -3,6 +3,7 @@ import { Router } from "express";
 import * as authController from "../controllers/auth.controller";
 import passport from "passport";
 import authMiddleware from "../middlewares/authMiddleware";
+import { loginLimiter } from "../middlewares/rateLimiting";
 
 
 const router = Router();
@@ -14,7 +15,7 @@ router.get('/health', (req, res) => {
     })
 });
 router.post('/signup', authController.signUp);
-router.post('/signin', authController.signIn);
+router.post('/signin', loginLimiter, authController.signIn);
 router.post('/logout', authController.logout);
 router.get('/me', authMiddleware, authController.me);
 router.post('/refresh', authController.refresh);
