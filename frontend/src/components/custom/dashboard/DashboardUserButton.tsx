@@ -1,11 +1,11 @@
 import useAuth from "@/hooks/useAuth";
-import GeneratedAvatar from "./GeneratedAvatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import GeneratedAvatar from "../GeneratedAvatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { ChevronDownIcon, CreditCard, CreditCardIcon, LogOut, LogOutIcon } from "lucide-react";
 import { useLogout } from "@/hooks/useLogout";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "../ui/drawer";
-import { Button } from "../ui/button";
+import { Drawer, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Button } from "@/components/ui/button";
 
 
 
@@ -13,7 +13,7 @@ function DashboardUserButton() {
     const { isLoading, isAuthenticated, user } = useAuth();
     const logoutMutation = useLogout();
     const isMobile = useIsMobile();
-    
+
 
     if (isLoading || !isAuthenticated) {
         return null;

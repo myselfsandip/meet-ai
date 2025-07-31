@@ -1,6 +1,7 @@
 import { useAuthStore } from '@/stores/authStore';
 import type { AuthResponse, LoginResponse, RefreshResponse, SignInCredentials, SignUpCredentials, SignUpResponse } from "@/types/auth";
 import apiClient, { API_BASE_URL } from './apiClient';
+import axios from 'axios';
 
 export const authApi = {
     signin: async (credentials: SignInCredentials): Promise<LoginResponse> => {
@@ -14,7 +15,7 @@ export const authApi = {
     },
 
     refreshToken: async (): Promise<RefreshResponse> => {
-        const response = await apiClient.get('/api/auth/refresh');
+        const response = await axios.post(API_BASE_URL + '/api/auth/refresh', {}, { withCredentials: true });  // Standalone API Call so that interceptors loop issue does not appear 
         return response.data;
     },
 

@@ -14,6 +14,7 @@ export const useLogout = () => {
             clearAuth();
             toast.success("Logged out successfully");
             navigate("/signin", { replace: true });
+            window.location.reload(); //Force Reload so that Browser Cache is not used and gets access by browser back button 
         },
         onError: (error: any) => {
             const errorMessage =

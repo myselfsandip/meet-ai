@@ -1,5 +1,5 @@
 import DashboardLayout from "@/layouts/DashboardLayout";
-import AgentsContent from "./AgentsContent";
+import AgentsContent from "@/components/custom/agent/AgentsContent";
 
 function Agents() {
 

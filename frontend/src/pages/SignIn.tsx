@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -18,6 +18,7 @@ export default function SignIn() {
     const { setAuth } = useAuthStore();
     const [isGoogleLoading, setIsGoogleLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const location = useLocation();
 
     const {
         register,
@@ -58,6 +59,13 @@ export default function SignIn() {
     const onSubmit = (data: LoginFormData) => {
         loginMutation.mutate(data);
     };
+
+    //Using React Router DOM  location State
+    useEffect(() => {
+        if (location.state?.reason === 'unauthorized') {
+            toast.error('Unauthorized. Please sign in.');
+        }
+    }, [location.state])
 
     return (
         <AuthLayout

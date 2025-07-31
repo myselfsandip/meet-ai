@@ -3,9 +3,11 @@ import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupConte
 import { Link, useLocation } from "react-router-dom";
 import { Separator } from "../components/ui/separator";
 import { cn } from "@/lib/utils";
-import DashboardUserButton from "../components/custom/DashboardUserButton";
+import DashboardUserButton from "../components/custom//dashboard/DashboardUserButton";
 import { useQueryClient } from "@tanstack/react-query";
 import { agentsApi } from "@/services/agentsApi";
+import { DEFAULT_PAGE } from "@/utils/constants";
+import type { AgentsFilters, AgentsListResponse } from "@/types/agentsTypes";
 
 
 
@@ -13,13 +15,26 @@ function DashboardSidebar() {
     const location = useLocation();
     const pathname = location.pathname;
     const queryClient = useQueryClient();
+    const filters = { search: '', page: DEFAULT_PAGE };
 
     const handleAgentsPreFetch = () => {
-        queryClient.prefetchQuery({
-            queryKey: ['agents'],
-            queryFn: agentsApi.getAgents
+        queryClient.prefetchQuery<AgentsListResponse, Error, AgentsListResponse, [string, AgentsFilters]>({
+            queryKey: ['agents', filters],
+            queryFn: ({ queryKey }) => {
+                const [_key, filters] = queryKey;
+                return agentsApi.getAgents(filters)
+            }
         })
     }
+
+    // The generic structure for useSuspenseQuery<TData, TError, TSelect = TData, TQueryKey = QueryKey> is:
+    // useSuspenseQuery<
+    //     TData,      // The type of data returned by the query function
+    //     TError,     // The type of error that might be thrown
+    //     TSelect,    // The final returned data after selection (usually same as TData)
+    //     TQueryKey   // The shape of the query key (helps with typing `queryFn`)
+    // >
+
 
     const firstSection = [
         {

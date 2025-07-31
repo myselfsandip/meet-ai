@@ -9,18 +9,15 @@ interface AuthGuardProps {
 
 function AuthGuard({ children }: AuthGuardProps) {
     const { isAuthenticated, isLoading } = useAuth();
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if (!isAuthenticated && !isLoading) {
-            console.log('Page Redirecting...');
-            navigate('/signin', { replace: true });
-        }
-    }, [isAuthenticated, isLoading, navigate]);
 
     if (isLoading) {
         return <CustomLoader />
     }
+    if (!isAuthenticated) {
+        return null;
+    }
+
+
     return (<>
         {children}
     </>

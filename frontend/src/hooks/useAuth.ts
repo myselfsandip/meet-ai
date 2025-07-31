@@ -2,7 +2,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { authApi } from '@/services/authApi';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import type { AuthResponse } from '@/types/auth';
 
 interface User {
@@ -18,13 +18,15 @@ interface AuthStateType {
 }
 
 const useAuth = () => {
-    const { user, setAuth, clearAuth, accessToken } = useAuthStore();
+    const { user, setAuth, clearAuth, accessToken, hasHydrated } = useAuthStore();
     const navigate = useNavigate();
+    const location = useLocation();
+    const routeLocation = useLocation();
 
     const [authState, setAuthState] = useState<AuthStateType>({
         isAuthenticated: !!user && !!accessToken,
         isLoading: true,
-        user,
+        user
     });
 
     const { isLoading: isTokenLoading, data, error } = useQuery<AuthResponse, Error>({
@@ -44,11 +46,12 @@ const useAuth = () => {
             }
         },
         retry: 0,
-        enabled: true,
+        enabled: !!hasHydrated,
+        staleTime: 5 * 60 * 1000
     });
 
     useEffect(() => {
-        if (isTokenLoading) return;
+        if (isTokenLoading || !hasHydrated) return;
 
         if (data) {
             setAuth(data.user, data.token);
@@ -64,13 +67,15 @@ const useAuth = () => {
                 isLoading: false,
                 user: null,
             });
-            navigate('/signin', { replace: true });
+            if (routeLocation.pathname !== '/signin' && routeLocation.pathname !== '/signup') {
+                navigate('/signin', { replace: true, state: { from: routeLocation.pathname, reason: 'unauthorized' } });
+            };
         }
-    }, [data, error, isTokenLoading, setAuth, clearAuth, navigate]);
+    }, [data, error, isTokenLoading, hasHydrated, setAuth, clearAuth, navigate, location.pathname]);
 
     return {
         isAuthenticated: authState.isAuthenticated,
-        isLoading: authState.isLoading || isTokenLoading,
+        isLoading: authState.isLoading || isTokenLoading || !hasHydrated,
         user: authState.user,
     };
 };

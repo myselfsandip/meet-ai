@@ -11,7 +11,7 @@ import { AgentsSerachFilter } from "@/components/custom/agent/AgentsSearchFilter
 import { DEFAULT_PAGE } from "@/utils/constants";
 
 function AgentsContent() {
-    const [filters,setFilters] = useAgentsFilters();
+    const [filters, setFilters] = useAgentsFilters();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const isAnyFilterModified = !!filters.search;
