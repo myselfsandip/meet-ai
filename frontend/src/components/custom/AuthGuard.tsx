@@ -1,6 +1,5 @@
 import useAuth from "@/hooks/useAuth";
-import { useEffect, type ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+import { type ReactNode } from "react";
 import CustomLoader from "./CustomLoader";
 
 interface AuthGuardProps {
