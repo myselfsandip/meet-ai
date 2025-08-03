@@ -4,14 +4,16 @@ import { DataTable } from "@/components/custom/agent/DataTable";
 import EmptyAgentsState from "@/components/custom/agent/EmptyAgentsState";
 import useAgents from "@/hooks/useAgents";
 import { useAgentsFilters } from "@/hooks/useAgentsFilters";
+import { useNavigate } from "react-router-dom";
 
 function AgentsList() {
     const { data, totalPages } = useAgents();
     const [filters, setFilters] = useAgentsFilters();
+    const navigate = useNavigate();
 
     return (
         <div className="flex-1 pb-4 px-4 md:px-8 flex flex-col gap-y-4">
-            <DataTable data={data} columns={columns} />
+            <DataTable data={data} columns={columns} onRowClick={(row) => navigate(`/agents/${row.id}`)} />
             <DataPagination
                 page={filters.page}
                 totalPages={totalPages}

@@ -1,10 +1,10 @@
-import type { AgentDetailResponse , AgentModel, CreateAgentDTO, AgentsListResponse, AgentsFilters } from '@/types/agentsTypes';
+import type { AgentDetailResponse, AgentModel, CreateAgentDTO, AgentsListResponse, AgentsFilters, UpdateAgentDTO } from '@/types/agentsTypes';
 import apiClient from './apiClient';
 
 
 export const agentsApi = {
     getAgents: async (filters: AgentsFilters): Promise<AgentsListResponse> => {
-        const response = await apiClient.get('/api/agents/',{
+        const response = await apiClient.get('/api/agents/', {
             params: {
                 ...filters
             }
@@ -18,5 +18,13 @@ export const agentsApi = {
     createAgent: async (credentials: CreateAgentDTO): Promise<AgentModel> => {
         const response = await apiClient.post(`/api/agents/`, credentials);
         return response.data;
-    }
+    },
+    updateAgent: async (credentials: UpdateAgentDTO): Promise<AgentModel> => {
+        const response = await apiClient.patch(`/api/agents/`, credentials);
+        return response.data.data;
+    },
+    deleteAgent: async (agentId: string): Promise<AgentModel> => {
+        const response = await apiClient.delete(`/api/agents/${agentId}`);
+        return response.data.data;
+    },
 };

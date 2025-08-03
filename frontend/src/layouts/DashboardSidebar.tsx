@@ -67,7 +67,7 @@ function DashboardSidebar() {
     return (<Sidebar>
         <SidebarHeader className="text-sidebar-accent-foreground">
             <Link to="/" className="flex items-center gap-2 px-2 pt-2">
-                <img src="logo.svg" alt="image" className="h-9 w-9 object-contain" />
+                <img src="/logo.svg" alt="image" className="h-9 w-9 object-contain" />
                 <p className="text-2xl font-semibold">Meet.AI</p>
             </Link>
         </SidebarHeader>

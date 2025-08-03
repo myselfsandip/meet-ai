@@ -8,6 +8,7 @@ import SignIn from "@/pages/SignIn"
 import SignUp from "@/pages/SignUp"
 import { Route, Routes } from "react-router-dom"
 import Overview from "@/pages/overview/Overview"
+import ViewAgent from "@/pages/agents/ViewAgent"
 
 
 
@@ -18,6 +19,7 @@ function AppRouter() {
           <Route path='/' element={<LandingPage />} />
           <Route path='/overview' element={<AuthGuard><Overview /></AuthGuard>} />
           <Route path='/agents' element={<AuthGuard><Agents /></AuthGuard>} />
+          <Route path='/agents/:id' element={<AuthGuard><ViewAgent /></AuthGuard>} />
           <Route path='/meetings' element={<AuthGuard><Meetings /></AuthGuard>} />
           <Route path='/signin' element={<SignIn />} />
           <Route path='/signup' element={<SignUp />} />

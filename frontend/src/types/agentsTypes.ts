@@ -5,15 +5,13 @@ export interface AgentModel { // Agent model
     instructions: string;
     createdAt: string;
     updatedAt: string;
-}
-
-export interface AgentListItemModel extends AgentModel {
     meetingCount: number;
 }
 
+
 // Response when fetching all agents
 export interface AgentsListResponse {
-    data: AgentListItemModel[];
+    data: AgentModel[];
     total: number;
     totalPages: number;
 }
@@ -25,6 +23,12 @@ export interface AgentDetailResponse {
 
 // Payload when creating a new agent
 export interface CreateAgentDTO {
+    name: string;
+    instructions: string;
+}
+
+export interface UpdateAgentDTO {
+    id: string;
     name: string;
     instructions: string;
 }

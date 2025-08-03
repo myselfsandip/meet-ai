@@ -15,7 +15,9 @@ function DashboardLayout({ children }: Props) {
                 <DashboardSidebar />
                 <main className="flex flex-col h-screen w-screen bg-muted">
                     <DashboardNavbar />
-                    {children}
+                    <div className="px-4 py-2">
+                        {children}
+                    </div>
                 </main>
             </SidebarProvider>
         </>

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { db } from "../db"
 import { agents } from "../db/schema"
 import asyncHandler from 'express-async-handler';
-import { agentDBResponseSchema, agentsDBResponseArraySchema, agentsInsertSchema, agentsInsertType, agentsQuerySchema } from '../validations/agents';
+import { agentDBResponseSchema, agentDeleteSchema, agentsDBResponseArraySchema, agentsDeleteType, agentsDeleteUpdateType, agentsInsertSchema, agentsInsertType, agentsQuerySchema, agentUpdateSchema, agentWithMeetingCountSchema } from '../validations/agents';
 import { ApiResponse } from '../types/api';
 import { and, count, desc, eq, getTableColumns, ilike, sql } from 'drizzle-orm';
 import { formatZodErrors } from '../utils/formatZodError';
@@ -65,7 +65,10 @@ export const getAgents = asyncHandler(async (req: Request, res: Response) => {
 export const getOneAgent = asyncHandler(async (req: Request, res: Response<ApiResponse>) => {
     const { id: agentId } = req.params;
     const userId = (req as any).user.userId;
-    const [data] = await db.select().from(agents).where(and(eq(agents.id, agentId), eq(agents.userId, userId))).orderBy(desc(agents.createdAt)).limit(1);
+    const [data] = await db.select({
+        ...getTableColumns(agents),
+        meetingCount: sql<number>`5`,
+    }).from(agents).where(and(eq(agents.id, agentId), eq(agents.userId, userId))).orderBy(desc(agents.createdAt)).limit(1);
     if (!data) {
         res.status(404).json({
             success: false,
@@ -73,7 +76,7 @@ export const getOneAgent = asyncHandler(async (req: Request, res: Response<ApiRe
         });
         return;
     }
-    const parsedpayload = agentDBResponseSchema.safeParse(data);
+    const parsedpayload = agentWithMeetingCountSchema.safeParse(data);
     if (!parsedpayload.success) {
         res.status(400).json({
             success: false,
@@ -113,5 +116,68 @@ export const createAgent = asyncHandler(async (req: Request, res: Response<ApiRe
         success: true,
         message: "Agent Created Successfully",
         data: data
+    });
+});
+
+
+export const updateAgent = asyncHandler(async (req: Request, res: Response<ApiResponse>) => {
+    const parsedpayload = agentUpdateSchema.safeParse(req.body);
+    if (!parsedpayload.success) {
+        res.status(400).json({
+            success: false,
+            message: "Invalid Credentials",
+            errors: parsedpayload.error.flatten().fieldErrors
+        });
+        return;
+    }
+    const { id, name, instructions }: agentsDeleteUpdateType = parsedpayload.data;
+    const userId = (req as any).user.userId;
+    const updateAgentRes = await db.update(agents).
+        set({
+            name, instructions,
+            updatedAt: new Date()
+        }).where(
+            and(eq(agents.id, id),
+                eq(agents.userId, userId)))
+        .returning();
+    if (updateAgentRes.length === 0) {
+        res.status(400).json({
+            success: false,
+            message: "Failed to Update Agent"
+        });
+        return;
+    }
+    res.status(200).json({
+        success: true,
+        message: `Agent ${updateAgentRes[0].name} Updated Successfully`,
+        data: updateAgentRes[0]
+    });
+});
+
+export const deleteAgent = asyncHandler(async (req: Request, res: Response<ApiResponse>) => {
+    const { id: agentId } = req.params;
+    const parsedpayload = agentDeleteSchema.safeParse({ id: agentId });
+    if (!parsedpayload.success) {
+        res.status(400).json({
+            success: false,
+            message: "Invalid Credentials",
+            errors: formatZodErrors(parsedpayload.error)
+        });
+        return;
+    }
+    const { id }: agentsDeleteType = parsedpayload.data;
+    const userId = (req as any).user.userId;
+    const delAgentRes = await db.delete(agents).where(and(eq(agents.id, id), eq(agents.userId, userId))).returning();
+    if (delAgentRes.length === 0) {
+        res.status(400).json({
+            success: false,
+            message: "Failed to delete agent"
+        });
+        return;
+    }
+    res.status(200).json({
+        success: true,
+        message: `Agent ${delAgentRes[0].name} deleted successfully`,
+        data: delAgentRes[0]
     });
 });

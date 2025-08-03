@@ -31,8 +31,20 @@ export const agentsQuerySchema = agentspaginationSchema.extend({
     search: z.string().nullish()
 }).optional()
 
+// DELETE AGENT SCHEMA
+export const agentDeleteSchema = z.object({
+    id: z.string().min(1, { message: "Id is required" }).trim(),
+});
+
+//UPDATE AGENT SCHEMA 
+export const agentUpdateSchema = agentsInsertSchema.extend({
+    id: z.string().min(1, { message: "Id is required" }).trim()
+})
+
 
 export const agentsDBResponseArraySchema = z.array(agentWithMeetingCountSchema);
 export type agentsDBResponseType = z.infer<typeof agentDBResponseSchema>;
 export type agentsInsertType = z.infer<typeof agentsInsertSchema>;
 export type agentsQueryType = z.infer<typeof agentsQuerySchema>;
+export type agentsDeleteType = z.infer<typeof agentDeleteSchema>;
+export type agentsDeleteUpdateType = z.infer<typeof agentUpdateSchema>;

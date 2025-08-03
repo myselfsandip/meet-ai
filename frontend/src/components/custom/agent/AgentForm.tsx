@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { useEffect, useRef } from "react";
 
 interface AgentFormProps {
     onSuccess?: () => void;
@@ -20,6 +21,14 @@ interface AgentFormProps {
 
 function AgentForm({ onSuccess, onCancel, initialValues }: AgentFormProps) {
     const queryClient = useQueryClient();
+
+    const form = useForm<agentInsertFormData>({
+        resolver: zodResolver(agentsInsertSchema),
+        defaultValues: {
+            name: initialValues?.name ?? '',
+            instructions: initialValues?.instructions ?? ''
+        }
+    });
 
     const createAgent = useMutation({
         mutationFn: agentsApi.createAgent,
@@ -32,25 +41,54 @@ function AgentForm({ onSuccess, onCancel, initialValues }: AgentFormProps) {
             toast.error(errMsg);
             //Later have to do  - Check if error code is "FORBIDDEN", redirect to "/upgrade"
         },
-    })
-    const form = useForm<agentInsertFormData>({
-        resolver: zodResolver(agentsInsertSchema),
-        defaultValues: {
-            name: initialValues?.name ?? '',
-            instructions: initialValues?.instructions ?? ''
-        }
     });
 
+    const updateAgent = useMutation({
+        mutationFn: agentsApi.updateAgent,
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ['agent', data.id] });
+            onSuccess?.();
+        },
+        onError: (error: any) => {
+            const errMsg = error?.response?.data?.message || "Something went wrong!";
+            toast.error(errMsg);
+            //Later have to do  - Check if error code is "FORBIDDEN", redirect to "/upgrade"
+        },
+    });
+
+
+
+
     const isEdit = !!initialValues?.id;
-    const ispending = createAgent.isPending;
+    const ispending = createAgent.isPending || updateAgent.isPending;
 
     const onSubmit = (values: agentInsertFormData) => {
         if (isEdit) {
-            console.log("TODO: updateAgent");
+            updateAgent.mutate({ ...values, id: initialValues.id })
         } else {
             createAgent.mutate(values)
         }
     }
+
+    //Agent Name Auto Selection Resolver. It sets the Cursor at the end of the Text
+    const inputRef = useRef<HTMLInputElement>(null);
+    useEffect(() => {
+        const input = inputRef.current;
+        if (input && initialValues?.name) {
+            // setTimeout(() => {
+            //     const length = input.value.length;
+            //     input.setSelectionRange(length, length)
+            // }, 0); // SetTimeout is used to make sure that the DOM is loaded 
+            // or Use requestAnimationFrame
+
+            requestAnimationFrame(() => {
+                const length = input.value.length;
+                input.setSelectionRange(length, length);
+            })
+        }
+    }, [initialValues?.name]);
+
+
 
     return (<Form {...form}>
         <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
@@ -64,7 +102,12 @@ function AgentForm({ onSuccess, onCancel, initialValues }: AgentFormProps) {
                 render={({ field }) => <FormItem>
                     <FormLabel>Name</FormLabel>
                     <FormControl>
-                        <Input {...field} placeholder="e.g. Math tutor" />
+                        <Input  {...field}
+                            ref={(el) => {
+                                field.ref(el);
+                                inputRef.current = el;
+                            }}
+                            placeholder="e.g. Math tutor" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
