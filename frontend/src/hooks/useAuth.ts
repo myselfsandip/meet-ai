@@ -21,11 +21,10 @@ const useAuth = () => {
     const { user, setAuth, clearAuth, accessToken, hasHydrated } = useAuthStore();
     const navigate = useNavigate();
     const location = useLocation();
-    const routeLocation = useLocation();
 
     const [authState, setAuthState] = useState<AuthStateType>({
         isAuthenticated: !!user && !!accessToken,
-        isLoading: true,
+        isLoading: !hasHydrated,
         user
     });
 
@@ -33,7 +32,8 @@ const useAuth = () => {
         queryKey: ['authCheck'],
         queryFn: async () => {
             if (!accessToken) {
-                throw new Error('No access token');
+                // console.log('no access token , refresh happened')
+                return await authApi.refreshToken();
             }
             try {
                 return await authApi.me();
@@ -67,8 +67,8 @@ const useAuth = () => {
                 isLoading: false,
                 user: null,
             });
-            if (routeLocation.pathname !== '/signin' && routeLocation.pathname !== '/signup') {
-                navigate('/signin', { replace: true, state: { from: routeLocation.pathname, reason: 'unauthorized' } });
+            if (location.pathname !== '/signin' && location.pathname !== '/signup') {
+                navigate('/signin', { replace: true, state: { from: location.pathname, reason: 'unauthorized' } });
             };
         }
     }, [data, error, isTokenLoading, hasHydrated, setAuth, clearAuth, navigate, location.pathname]);

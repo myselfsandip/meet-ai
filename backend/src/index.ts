@@ -9,6 +9,7 @@ import passport from "passport"
 
 import auth from "./routes/auth";
 import agentsRoutes from "./routes/agents";
+import meetingsRoutes from "./routes/meetings";
 import { errorHandler } from "./middlewares/errorHandler";
 import { configurePassport } from "./config/passport";
 import { globalLimiter } from "./middlewares/rateLimiting";
@@ -28,9 +29,10 @@ app.use(passport.initialize());
 configurePassport();
 
 
-
+//API ROUTES
 app.use("/api/auth", auth);
 app.use("/api/agents", agentsRoutes);
+app.use("/api/meetings", meetingsRoutes);
 
 
 // Error Handler

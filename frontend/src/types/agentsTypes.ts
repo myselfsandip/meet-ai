@@ -36,5 +36,6 @@ export interface UpdateAgentDTO {
 
 export interface AgentsFilters {
     search: string;
-    page: number;
+    page?: number;
+    pageSize?: number;
 }

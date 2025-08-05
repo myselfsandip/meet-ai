@@ -9,6 +9,7 @@ import SignUp from "@/pages/SignUp"
 import { Route, Routes } from "react-router-dom"
 import Overview from "@/pages/overview/Overview"
 import ViewAgent from "@/pages/agents/ViewAgent"
+import ViewMeeting from "@/pages/meetings/ViewMeeting"
 
 
 
@@ -21,6 +22,7 @@ function AppRouter() {
           <Route path='/agents' element={<AuthGuard><Agents /></AuthGuard>} />
           <Route path='/agents/:id' element={<AuthGuard><ViewAgent /></AuthGuard>} />
           <Route path='/meetings' element={<AuthGuard><Meetings /></AuthGuard>} />
+          <Route path='/meetings/:id' element={<AuthGuard><ViewMeeting /></AuthGuard>} />
           <Route path='/signin' element={<SignIn />} />
           <Route path='/signup' element={<SignUp />} />
           <Route path='/oauth-success' element={<OAuthCallback />} />

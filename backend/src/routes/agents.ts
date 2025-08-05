@@ -1,14 +1,14 @@
 import { Router } from "express";
-import * as authController from "../controllers/agents.controller";
+import * as agentsController from "../controllers/agents.controller";
 import authMiddleware from "../middlewares/authMiddleware";
 
 const router = Router();
 
-router.get('/', authMiddleware, authController.getAgents);
-router.post('/', authMiddleware, authController.createAgent);
-router.patch('/', authMiddleware, authController.updateAgent);
-router.get('/:id', authMiddleware, authController.getOneAgent);
-router.delete('/:id', authMiddleware, authController.deleteAgent);
+router.get('/', authMiddleware, agentsController.getAgents);
+router.post('/', authMiddleware, agentsController.createAgent);
+router.patch('/', authMiddleware, agentsController.updateAgent);
+router.get('/:id', authMiddleware, agentsController.getOneAgent);
+router.delete('/:id', authMiddleware, agentsController.deleteAgent);
 
 
 export default router;

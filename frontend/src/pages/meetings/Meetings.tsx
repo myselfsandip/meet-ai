@@ -1,10 +1,10 @@
 import DashboardLayout from "@/layouts/DashboardLayout";
-import MeetingsContent from "./MeetingsContent";
+import MeetingsContent from "../../components/custom/meetings/MeetingsContent";
 
 function Meetings() {
     return (<DashboardLayout>
         <MeetingsContent />
-    </DashboardLayout>);
+    </DashboardLayout >);
 }
 
 export default Meetings;

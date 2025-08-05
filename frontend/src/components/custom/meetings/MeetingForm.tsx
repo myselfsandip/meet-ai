@@ -1,15 +1,6 @@
-import {
-    agentsInsertSchema,
-    agentUpdateSchema,
-    type agentInsertFormData,
-    type agentUpdateFormData,
-} from "@/lib/validations/agents";
-import { agentsApi } from "@/services/agentsApi";
-import type { AgentModel } from "@/types/agentsTypes";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import GeneratedAvatar from "../GeneratedAvatar";
 import {
     Form,
     FormControl,
@@ -19,57 +10,75 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { z } from "zod";
+import type { MeetingModel } from "@/types/meetingsTypes";
+import { meetingInsertSchema, meetingUpdateSchema, type meetingInsertFormData, type meetingUpdateFormData } from "@/lib/validations/meetings";
+import { meetingsApi } from "@/services/meetingsApi";
+import { agentsApi } from "@/services/agentsApi";
+import CommandSelect from "./CommandSelect";
+import GeneratedAvatar from "../GeneratedAvatar";
+import { debounce } from "@/utils/debounce";
 
-interface AgentFormProps {
-    onSuccess?: () => void;
+interface MeetingFormProps {
+    onSuccess?: (id?: string) => void;
     onCancel?: () => void;
-    initialValues?: AgentModel;
+    initialValues?: MeetingModel;
 }
 
-function AgentForm({ onSuccess, onCancel, initialValues }: AgentFormProps) {
+function MeetingForm({ onSuccess, onCancel, initialValues }: MeetingFormProps) {
     const queryClient = useQueryClient();
+    const [agentSearch, setAgentSearch] = useState("");
+
+    //Debounce On Search Input
+    const debouncedSetAgentSearch = useCallback(debounce((val: string) => {
+        setAgentSearch(val);
+    }, 300),
+        []
+    );
+
+    const { data: agents } = useQuery({
+        queryKey: ['agents', agentSearch],
+        queryFn: () => agentsApi.getAgents({ search: agentSearch, pageSize: 100 }),
+    })
 
     const isEdit = !!initialValues?.id;
-    const schema = isEdit ? agentUpdateSchema : agentsInsertSchema;
+    const schema = isEdit ? meetingUpdateSchema : meetingInsertSchema;
     type FormData = z.infer<typeof schema>;
 
     const form = useForm<FormData>({
         resolver: zodResolver(schema),
-        defaultValues: {
-            ...(isEdit
-                ? {
-                    id: initialValues.id,
-                    name: initialValues.name,
-                    instructions: initialValues.instructions,
-                }
-                : {
-                    name: "",
-                    instructions: "",
-                }),
-        } as any, // casting to `any` to allow both insert & update default values
+        defaultValues: isEdit ?
+            {
+                id: initialValues?.id ?? "",
+                name: initialValues?.name ?? "",
+                agentId: initialValues?.agentId ?? ""
+            } :
+            {
+                name: "",
+                agentId: initialValues?.agentId ?? ""
+            } as any,
+
     });
 
-    const createAgent = useMutation({
-        mutationFn: agentsApi.createAgent,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["agents"] });
-            onSuccess?.();
-        },
-        onError: (error: any) => {
-            const errMsg = error?.response?.data?.message || "Something went wrong!";
-            toast.error(errMsg);
-        },
-    });
-
-    const updateAgent = useMutation({
-        mutationFn: agentsApi.updateAgent,
+    const createMeeting = useMutation({
+        mutationFn: meetingsApi.createMeeting,
         onSuccess: (data) => {
-            queryClient.invalidateQueries({ queryKey: ["agent", data.id] });
+            queryClient.invalidateQueries({ queryKey: ["meetings"] });
+            onSuccess?.(data.id);
+        },
+        onError: (error: any) => {
+            const errMsg = error?.response?.data?.message || "Something went wrong!";
+            toast.error(errMsg);
+        },
+    });
+
+    const updateMeeting = useMutation({
+        mutationFn: meetingsApi.updateMeeting,
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({ queryKey: ["meeting", data.id] });
             onSuccess?.();
         },
         onError: (error: any) => {
@@ -78,13 +87,13 @@ function AgentForm({ onSuccess, onCancel, initialValues }: AgentFormProps) {
         },
     });
 
-    const ispending = createAgent.isPending || updateAgent.isPending;
+    const ispending = createMeeting.isPending || updateMeeting.isPending;
 
     const onSubmit = (values: FormData) => {
         if (isEdit) {
-            updateAgent.mutate(values as agentUpdateFormData);
+            updateMeeting.mutate(values as meetingUpdateFormData);
         } else {
-            createAgent.mutate(values as agentInsertFormData);
+            createMeeting.mutate(values as meetingInsertFormData);
         }
     };
 
@@ -102,11 +111,7 @@ function AgentForm({ onSuccess, onCancel, initialValues }: AgentFormProps) {
     return (
         <Form {...form}>
             <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
-                <GeneratedAvatar
-                    seed={form.watch("name")}
-                    variant="botttsNeutral"
-                    className="border size-16"
-                />
+
                 <FormField
                     name="name"
                     control={form.control}
@@ -120,29 +125,43 @@ function AgentForm({ onSuccess, onCancel, initialValues }: AgentFormProps) {
                                         field.ref(el);
                                         inputRef.current = el;
                                     }}
-                                    placeholder="e.g. Math tutor"
+                                    placeholder="e.g. Math Consultations"
                                 />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
+
+
                 <FormField
-                    name="instructions"
+                    name="agentId"
                     control={form.control}
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Instructions</FormLabel>
+                            <FormLabel>Agent</FormLabel>
                             <FormControl>
-                                <Textarea
-                                    {...field}
-                                    placeholder="You are a helpful math assistant that can answer questions and help with tasks."
+                                <CommandSelect options={(agents?.data ?? []).map((agent) => ({
+                                    id: agent.id,
+                                    value: agent.id,
+                                    children: (
+                                        <div className="flex items-center gap-x-2">
+                                            <GeneratedAvatar variant="botttsNeutral" seed={agent.name} className="border size-6" />
+                                            <span>{agent.name}</span>
+                                        </div>
+                                    )
+                                }))}
+                                    onSelect={field.onChange}
+                                    onSearch={debouncedSetAgentSearch}
+                                    value={field.value}
+                                    placeholder="Select an agent"
                                 />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
+
 
                 <div className="flex gap-2">
                     {onCancel && (
@@ -164,4 +183,4 @@ function AgentForm({ onSuccess, onCancel, initialValues }: AgentFormProps) {
     );
 }
 
-export default AgentForm;
+export default MeetingForm;
