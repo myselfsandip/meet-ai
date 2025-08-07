@@ -4,7 +4,7 @@ interface Props {
 }
 
 
-function EmptyAgentsState({ title, description }: Props) {
+function EmptyState({ title, description }: Props) {
     return (
         <div className="flex flex-col items-center justify-center">
             <img src="/empty.svg" alt="Empty" width={240} height={240} />
@@ -16,4 +16,4 @@ function EmptyAgentsState({ title, description }: Props) {
     );
 }
 
-export default EmptyAgentsState;
+export default EmptyState;

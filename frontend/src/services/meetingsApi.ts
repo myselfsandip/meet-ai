@@ -9,7 +9,7 @@ export const meetingsApi = {
                 ...filters
             }
         });
-        return response.data.data;
+        return response.data;
     },
     getOneMeeting: async (id: string): Promise<MeetingDetailResponse> => {
         const response = await apiClient.get(`api/meetings/${id}`);

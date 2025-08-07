@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { db } from "../db"
-import { meetings } from "../db/schema"
+import { agents, meetings } from "../db/schema"
 import asyncHandler from 'express-async-handler';
 import { ApiResponse } from '../types/api';
 import { and, count, desc, eq, getTableColumns, ilike, sql } from 'drizzle-orm';
@@ -29,8 +29,11 @@ export const getMeetings = asyncHandler(async (req: Request, res: Response) => {
 
     const data = await db.select({
         ...getTableColumns(meetings),
-    }).from(meetings).
-        where(whereClause).
+        agent: agents,
+        duration: sql<number>`EXTRACT(EPOCH FROM (ended_at - started_at))`.as("duration"),
+    }).from(meetings)
+    .innerJoin(agents,eq(meetings.agentId,agents.id))
+        .where(whereClause).
         orderBy(desc(meetings.createdAt), desc(meetings.id))
         .limit(pageSize)
         .offset((page - 1) * pageSize)

@@ -21,7 +21,7 @@ function NewMeetingDialog({ open, onOpenChange }: NewMeetingDialog) {
             <MeetingForm
                 onSuccess={(id) => {
                     onOpenChange(false);
-                    navigate(`/meetings/${id}`);
+                    // navigate(`/meetings/${id}`);
                 }}
                 onCancel={() => onOpenChange(false)}
             />

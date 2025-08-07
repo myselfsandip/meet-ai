@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import {
     Form,
     FormControl,
+    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -21,6 +22,7 @@ import { agentsApi } from "@/services/agentsApi";
 import CommandSelect from "./CommandSelect";
 import GeneratedAvatar from "../GeneratedAvatar";
 import { debounce } from "@/utils/debounce";
+import NewAgentDialog from "../agent/NewAgentDialog";
 
 interface MeetingFormProps {
     onSuccess?: (id?: string) => void;
@@ -31,6 +33,7 @@ interface MeetingFormProps {
 function MeetingForm({ onSuccess, onCancel, initialValues }: MeetingFormProps) {
     const queryClient = useQueryClient();
     const [agentSearch, setAgentSearch] = useState("");
+    const [openNewAgentDialog, setOpenNewAgentDialog] = useState(false);
 
     //Debounce On Search Input
     const debouncedSetAgentSearch = useCallback(debounce((val: string) => {
@@ -109,77 +112,88 @@ function MeetingForm({ onSuccess, onCancel, initialValues }: MeetingFormProps) {
     }, [initialValues?.name]);
 
     return (
-        <Form {...form}>
-            <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+        <>
+        <NewAgentDialog open={openNewAgentDialog} onOpenChange={setOpenNewAgentDialog} />
+            <Form {...form}>
+                <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
 
-                <FormField
-                    name="name"
-                    control={form.control}
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Name</FormLabel>
-                            <FormControl>
-                                <Input
-                                    {...field}
-                                    ref={(el) => {
-                                        field.ref(el);
-                                        inputRef.current = el;
-                                    }}
-                                    placeholder="e.g. Math Consultations"
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-
-
-                <FormField
-                    name="agentId"
-                    control={form.control}
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Agent</FormLabel>
-                            <FormControl>
-                                <CommandSelect options={(agents?.data ?? []).map((agent) => ({
-                                    id: agent.id,
-                                    value: agent.id,
-                                    children: (
-                                        <div className="flex items-center gap-x-2">
-                                            <GeneratedAvatar variant="botttsNeutral" seed={agent.name} className="border size-6" />
-                                            <span>{agent.name}</span>
-                                        </div>
-                                    )
-                                }))}
-                                    onSelect={field.onChange}
-                                    onSearch={debouncedSetAgentSearch}
-                                    value={field.value}
-                                    placeholder="Select an agent"
-                                />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
+                    <FormField
+                        name="name"
+                        control={form.control}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Name</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        {...field}
+                                        ref={(el) => {
+                                            field.ref(el);
+                                            inputRef.current = el;
+                                        }}
+                                        placeholder="e.g. Math Consultations"
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
 
 
-                <div className="flex gap-2">
-                    {onCancel && (
-                        <Button
-                            variant="ghost"
-                            disabled={ispending}
-                            type="button"
-                            onClick={() => onCancel()}
-                        >
-                            Cancel
+                    <FormField
+                        name="agentId"
+                        control={form.control}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Agent</FormLabel>
+                                <FormControl>
+                                    <CommandSelect options={(agents?.data ?? []).map((agent) => ({
+                                        id: agent.id,
+                                        value: agent.id,
+                                        children: (
+                                            <div className="flex items-center gap-x-2">
+                                                <GeneratedAvatar variant="botttsNeutral" seed={agent.name} className="border size-6" />
+                                                <span>{agent.name}</span>
+                                            </div>
+                                        )
+                                    }))}
+                                        onSelect={field.onChange}
+                                        onSearch={debouncedSetAgentSearch}
+                                        value={field.value}
+                                        placeholder="Select an agent"
+                                    />
+                                </FormControl>
+                                <FormDescription>
+                                    Not found what you&apos;re looking for?{" "}
+                                    <button type="button" className="text-primary hover:underline"
+                                        onClick={() => setOpenNewAgentDialog(true)}
+                                    >
+                                        Create new Agent
+                                    </button>
+                                </FormDescription>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
+
+                    <div className="flex gap-2">
+                        {onCancel && (
+                            <Button
+                                variant="ghost"
+                                disabled={ispending}
+                                type="button"
+                                onClick={() => onCancel()}
+                            >
+                                Cancel
+                            </Button>
+                        )}
+                        <Button disabled={ispending} type="submit">
+                            {isEdit ? "Update" : "Create"}
                         </Button>
-                    )}
-                    <Button disabled={ispending} type="submit">
-                        {isEdit ? "Update" : "Create"}
-                    </Button>
-                </div>
-            </form>
-        </Form>
+                    </div>
+                </form>
+            </Form>
+        </>
     );
 }
 

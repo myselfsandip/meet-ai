@@ -1,11 +1,11 @@
-import type { AgentListItemModel, AgentModel } from "@/types/agentsTypes"
+import type { AgentModel } from "@/types/agentsTypes"
 import type { ColumnDef } from "@tanstack/react-table"
 import GeneratedAvatar from "../GeneratedAvatar"
-import {  CornerDownRightIcon, VideoIcon } from "lucide-react"
+import { CornerDownRightIcon, VideoIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 
-export const columns: ColumnDef<AgentListItemModel>[] = [
+export const columns: ColumnDef<AgentModel>[] = [
     {
         accessorKey: "name",
         header: "Agent Name",
@@ -24,13 +24,13 @@ export const columns: ColumnDef<AgentListItemModel>[] = [
                 </div>
             </div>
         )
-    },{
+    }, {
         accessorKey: "meetingCount",
         header: "Meetings",
-        cell: ({row}) => (
+        cell: ({ row }) => (
             <Badge
-            variant={"outline"}
-            className="flex items-center gap-x-2 [&>svg]:size-4"
+                variant={"outline"}
+                className="flex items-center gap-x-2 [&>svg]:size-4"
             >
                 <VideoIcon className="text-blue-700" />
                 {row.original.meetingCount} {row.original.meetingCount === 1 ? "meeting" : "meetings"}

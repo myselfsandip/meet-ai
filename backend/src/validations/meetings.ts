@@ -52,7 +52,17 @@ export const meetingSchema = z.object({
     updatedAt: z.date(),
 });
 
-export const meetingsDBResponseArraySchema = z.array(meetingSchema);
+
+
+export const enrichedMeetingSchema = meetingSchema.extend({
+    duration: z.number().nullable(),
+    agent: z.object({
+        id: z.string(),
+        name: z.string(),
+    }),
+});
+
+export const meetingsDBResponseArraySchema = z.array(enrichedMeetingSchema);
 
 // 🔹 Export types
 export type MeetingInsertType = z.infer<typeof meetingInsertSchema>;

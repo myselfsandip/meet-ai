@@ -1,14 +1,14 @@
 import { columns } from "@/components/custom/agent/Columns";
-import DataPagination from "@/components/custom/agent/DataPagination";
-import { DataTable } from "@/components/custom/agent/DataTable";
-import EmptyAgentsState from "@/components/custom/agent/EmptyAgentsState";
+import DataPagination from "@/components/custom/DataPagination";
+import { DataTable } from "@/components/custom/DataTable";
+import EmptyState from "@/components/custom/EmptyState";
 import useAgents from "@/hooks/useAgents";
-import { useAgentsFilters } from "@/hooks/useAgentsFilters";
+import { useFilters } from "@/hooks/useFilters";
 import { useNavigate } from "react-router-dom";
 
 function AgentsList() {
     const { data, totalPages } = useAgents();
-    const [filters, setFilters] = useAgentsFilters();
+    const [filters, setFilters] = useFilters();
     const navigate = useNavigate();
 
     return (
@@ -20,7 +20,7 @@ function AgentsList() {
                 onPageChange={(page) => setFilters({ page })}
             />
             {data.length === 0 && (
-                <EmptyAgentsState
+                <EmptyState
                     title="Create your first agent"
                     description="Create an agent to join your meetings. Each agent will follow your instructions and can interact with participants during the call."
                 />

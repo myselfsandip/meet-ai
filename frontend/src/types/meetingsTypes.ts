@@ -1,3 +1,5 @@
+import type { AgentModel } from "./agentsTypes";
+
 export type MeetingStatus = 'upcoming' | 'active' | 'completed' | 'processing' | 'cancelled';
 
 export interface MeetingModel {
@@ -15,8 +17,17 @@ export interface MeetingModel {
     updatedAt: string;
 }
 
+export interface EnrichedMeeting extends MeetingModel {
+    duration: number;
+    agent: AgentModel;
+}
+
+export type MeetingsGetMany = EnrichedMeeting[];
+
+
+
 export interface MeetingsListResponse {
-    data: MeetingModel[];
+    data: EnrichedMeeting[];
     total: number;
     totalPages: number;
 }
@@ -28,7 +39,7 @@ export interface MeetingDetailResponse {
 export interface CreateMeetingDTO {
     name: string;
     agentId: string;
-    status?: MeetingStatus; 
+    status?: MeetingStatus;
     startedAt?: string | null;
     endedAt?: string | null;
     transcriptUrl?: string | null;

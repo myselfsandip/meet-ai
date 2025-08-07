@@ -6,12 +6,12 @@ import AgentsList from "./AgentsList";
 import { Button } from "@/components/ui/button";
 import { PlusIcon, XCircleIcon } from "lucide-react";
 import NewAgentDialog from "@/components/custom/agent/NewAgentDialog";
-import { useAgentsFilters } from "@/hooks/useAgentsFilters";
+import { useFilters } from "@/hooks/useFilters";
 import { AgentsSerachFilter } from "@/components/custom/agent/AgentsSearchFilter";
 import { DEFAULT_PAGE } from "@/utils/constants";
 
 function AgentsContent() {
-    const [filters, setFilters] = useAgentsFilters();
+    const [filters, setFilters] = useFilters();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const isAnyFilterModified = !!filters.search;
