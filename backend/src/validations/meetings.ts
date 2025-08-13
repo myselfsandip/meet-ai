@@ -35,6 +35,8 @@ export const meetingPaginationSchema = z.object({
 
 export const meetingsQuerySchema = meetingPaginationSchema.extend({
     search: z.string().nullish(),
+    agentId: z.string().nullish(),
+    status: meetingStatusEnum.nullish()
 }).optional();
 
 export const meetingSchema = z.object({
@@ -50,6 +52,7 @@ export const meetingSchema = z.object({
     summary: z.string().nullable(),
     createdAt: z.date(),
     updatedAt: z.date(),
+    duration: z.number().nullable()
 });
 
 
@@ -64,9 +67,10 @@ export const enrichedMeetingSchema = meetingSchema.extend({
 
 export const meetingsDBResponseArraySchema = z.array(enrichedMeetingSchema);
 
-// 🔹 Export types
+//  Export types
 export type MeetingInsertType = z.infer<typeof meetingInsertSchema>;
 export type MeetingUpdateType = z.infer<typeof meetingUpdateSchema>;
 export type MeetingDeleteType = z.infer<typeof meetingDeleteSchema>;
 export type MeetingsQueryType = z.infer<typeof meetingsQuerySchema>;
 export type MeetingSchemaType = z.infer<typeof meetingSchema>;
+export type MeetingStatusType = z.infer<typeof meetingStatusEnum>;

@@ -1,6 +1,6 @@
+import type { MeetingStatus } from "@/lib/validations/meetings";
 import type { AgentModel } from "./agentsTypes";
 
-export type MeetingStatus = 'upcoming' | 'active' | 'completed' | 'processing' | 'cancelled';
 
 export interface MeetingModel {
     id: string;
@@ -33,7 +33,19 @@ export interface MeetingsListResponse {
 }
 
 export interface MeetingDetailResponse {
-    data: MeetingModel;
+    id: string;
+    name: string;
+    userId: number;
+    agentId: string;
+    status: MeetingStatus;
+    startedAt: string | null;
+    endedAt: string | null;
+    transcriptUrl: string | null;
+    recordingUrl: string | null;
+    summary: string | null;
+    createdAt: string;
+    updatedAt: string;
+    duration: string | null;
 }
 
 export interface CreateMeetingDTO {
@@ -45,6 +57,7 @@ export interface CreateMeetingDTO {
     transcriptUrl?: string | null;
     recordingUrl?: string | null;
     summary?: string | null;
+    duration?: string | null;
 }
 
 export interface UpdateMeetingDTO {

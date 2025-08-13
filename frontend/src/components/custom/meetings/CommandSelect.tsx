@@ -12,7 +12,7 @@ interface Props {
         children: ReactNode;
     }>;
     onSelect: (value: string) => void;
-    onSearch: (value: string) => void;
+    onSearch?: (value: string) => void;
     value: string;
     placeholder?: string;
     isSearchable?: boolean;
@@ -22,6 +22,12 @@ interface Props {
 function CommandSelect({ options, onSearch, onSelect, value, placeholder = "Select an option", isSearchable, className }: Props) {
     const [open, setOpen] = useState(false);
     const selectOption = options.find((option) => option.value === value);
+
+    //Reset the options listing on close - cause after close it was getting empty
+    const handleOpenChange = (open: boolean) => {
+        onSearch?.("");
+        setOpen(open);
+    }
 
 
     return (
@@ -43,8 +49,8 @@ function CommandSelect({ options, onSearch, onSelect, value, placeholder = "Sele
             </Button>
             <CommandResponsiveDialog
                 open={open}
-                onOpenChange={setOpen}
                 shouldFilter={!onSearch}
+                onOpenChange={handleOpenChange}
             >
                 <CommandInput placeholder="Search..." onValueChange={onSearch} />
                 <CommandList>

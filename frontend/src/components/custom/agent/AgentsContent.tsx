@@ -9,6 +9,7 @@ import NewAgentDialog from "@/components/custom/agent/NewAgentDialog";
 import { useFilters } from "@/hooks/useFilters";
 import { AgentsSerachFilter } from "@/components/custom/agent/AgentsSearchFilter";
 import { DEFAULT_PAGE } from "@/utils/constants";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 function AgentsContent() {
     const [filters, setFilters] = useFilters();
@@ -36,15 +37,18 @@ function AgentsContent() {
                     </Button>
                 </div>
 
-                <div className="flex items-center gap-x-2 p-1 ">
-                    <AgentsSerachFilter />
-                    {isAnyFilterModified && (
-                        <Button variant="outline" size="sm" onClick={onClearFilters}>
-                            <XCircleIcon />
-                            Clear
-                        </Button>
-                    )}
-                </div>
+                <ScrollArea>
+                    <div className="flex items-center gap-x-2 p-1 ">
+                        <AgentsSerachFilter />
+                        {isAnyFilterModified && (
+                            <Button variant="outline" size="sm" onClick={onClearFilters}>
+                                <XCircleIcon />
+                                Clear
+                            </Button>
+                        )}
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                </ScrollArea>
             </div>
             <ErrorBoundary fallback={<ErrorState title="Error Loading Agents" description="Please try again later" />}>
                 <Suspense fallback={<LoadingState title="Loading Agents" description="This may take a few seconds" />}>

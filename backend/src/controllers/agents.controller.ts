@@ -2,7 +2,10 @@ import { Request, Response } from 'express';
 import { db } from "../db"
 import { agents } from "../db/schema"
 import asyncHandler from 'express-async-handler';
-import { agentDBResponseSchema, agentDeleteSchema, agentsDBResponseArraySchema, agentsDeleteType, agentsDeleteUpdateType, agentsInsertSchema, agentsInsertType, agentsQuerySchema, agentUpdateSchema, agentWithMeetingCountSchema } from '../validations/agents';
+import {
+    agentDeleteSchema, agentsDBResponseArraySchema, agentsDeleteType, agentsDeleteUpdateType,
+    agentsInsertSchema, agentsInsertType, agentsQuerySchema, agentUpdateSchema, agentWithMeetingCountSchema
+} from '../validations/agents';
 import { ApiResponse } from '../types/api';
 import { and, count, desc, eq, getTableColumns, ilike, sql } from 'drizzle-orm';
 import { formatZodErrors } from '../utils/formatZodError';

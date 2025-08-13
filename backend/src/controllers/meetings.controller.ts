@@ -6,7 +6,11 @@ import { ApiResponse } from '../types/api';
 import { and, count, desc, eq, getTableColumns, ilike, sql } from 'drizzle-orm';
 import { formatZodErrors } from '../utils/formatZodError';
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from '../utils/constants';
-import { meetingDeleteSchema, MeetingDeleteType, meetingInsertSchema, MeetingInsertType, meetingSchema, meetingsDBResponseArraySchema, meetingsQuerySchema, meetingUpdateSchema, MeetingUpdateType } from '../validations/meetings';
+import {
+    meetingDeleteSchema, MeetingDeleteType, meetingInsertSchema, MeetingInsertType,
+    meetingSchema, meetingsDBResponseArraySchema, meetingsQuerySchema,
+    meetingUpdateSchema, MeetingUpdateType
+} from '../validations/meetings';
 
 export const getMeetings = asyncHandler(async (req: Request, res: Response) => {
     const userId = (req as any).user.userId;
@@ -20,11 +24,13 @@ export const getMeetings = asyncHandler(async (req: Request, res: Response) => {
         });
     }
 
-    const { page = DEFAULT_PAGE, pageSize = DEFAULT_PAGE_SIZE, search } = queryValidation.data ?? {};
+    const { page = DEFAULT_PAGE, pageSize = DEFAULT_PAGE_SIZE, search, status, agentId } = queryValidation.data ?? {};
 
     const whereClause = and(
         eq(meetings.userId, userId),
-        search ? ilike(meetings.name, `%${search}%`) : undefined
+        search ? ilike(meetings.name, `%${search}%`) : undefined,
+        status ? eq(meetings.status, status) : undefined,
+        agentId ? eq(meetings.agentId, agentId) : undefined,
     );
 
     const data = await db.select({
@@ -32,7 +38,7 @@ export const getMeetings = asyncHandler(async (req: Request, res: Response) => {
         agent: agents,
         duration: sql<number>`EXTRACT(EPOCH FROM (ended_at - started_at))`.as("duration"),
     }).from(meetings)
-    .innerJoin(agents,eq(meetings.agentId,agents.id))
+        .innerJoin(agents, eq(meetings.agentId, agents.id))
         .where(whereClause).
         orderBy(desc(meetings.createdAt), desc(meetings.id))
         .limit(pageSize)
@@ -68,6 +74,7 @@ export const getOneMeeting = asyncHandler(async (req: Request, res: Response<Api
     const userId = (req as any).user.userId;
     const [data] = await db.select({
         ...getTableColumns(meetings),
+        duration: sql<number>`EXTRACT(EPOCH FROM (ended_at - started_at))`.as("duration"),
     }).from(meetings).where(and(eq(meetings.id, id), eq(meetings.userId, userId))).orderBy(desc(meetings.createdAt)).limit(1);
     if (!data) {
         res.status(404).json({

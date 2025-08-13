@@ -1,7 +1,3 @@
-import { meetingsApi } from "@/services/meetingsApi";
-import type { EnrichedMeeting, MeetingsListResponse } from "@/types/meetingsTypes";
-import { DEFAULT_PAGE } from "@/utils/constants";
-import { useSuspenseQuery } from "@tanstack/react-query";
 import { DataTable } from "@/components/custom/DataTable";
 import { columns } from "./Columns"
 import { useNavigate } from "react-router-dom";
@@ -15,8 +11,10 @@ function MeetingsList() {
     const [filters, setFilters] = useFilters();
     const { data, totalPages } = useMeetings();
 
+
+
     return (
-        <div >
+        <div className="flex-1 pb-4 px-4 md:px-8 flex flex-col gap-y-4">
             <DataTable columns={columns} data={data} onRowClick={(row) => navigate(`/meetings/${row.id}`)} />
             <DataPagination
                 page={filters.page}

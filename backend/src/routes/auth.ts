@@ -15,7 +15,7 @@ router.get('/health', (req, res) => {
     })
 });
 router.post('/signup', authController.signUp);
-router.post('/signin', loginLimiter, authController.signIn);
+router.post('/signin', loginLimiter, authController.signIn); //Rate-Limiting in Login
 router.post('/logout', authController.logout);
 router.get('/me', authMiddleware, authController.me);
 router.post('/refresh', authController.refresh);

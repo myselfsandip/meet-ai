@@ -13,7 +13,8 @@ export const meetingsApi = {
     },
     getOneMeeting: async (id: string): Promise<MeetingDetailResponse> => {
         const response = await apiClient.get(`api/meetings/${id}`);
-        return response.data.data;
+        const data =  response.data.data;
+        return data;
     },
     createMeeting: async (credentials: CreateMeetingDTO): Promise<MeetingModel> => {
         const response = await apiClient.post(`/api/meetings/`, credentials);

@@ -14,7 +14,7 @@ function ViewMeeting() {
         <DashboardLayout>
             <ErrorBoundary fallback={<ErrorState title="Error" description="Something went wrong." />}>
                 <Suspense fallback={<LoadingState title="Loading Agent" description="This may take a few seconds" />}>
-                    <ViewMeetingontent id={id} />
+                    <ViewMeetingontent meetingId={id} />
                 </Suspense>
             </ErrorBoundary>
         </DashboardLayout>

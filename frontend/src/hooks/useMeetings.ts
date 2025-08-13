@@ -1,10 +1,10 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
-import { useFilters } from "./useFilters"
 import type { MeetingsFilters, MeetingsListResponse } from "@/types/meetingsTypes";
 import { meetingsApi } from "@/services/meetingsApi";
+import { useMeetingsFilters } from "./useMeetingsFilters";
 
 const useMeetings = (): MeetingsListResponse => {
-    const [filters] = useFilters();
+    const [filters] = useMeetingsFilters();
     const { data } = useSuspenseQuery<
         MeetingsListResponse,
         Error,
