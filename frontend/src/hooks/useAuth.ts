@@ -3,13 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 import { authApi } from '@/services/authApi';
 import { useLocation, useNavigate } from 'react-router-dom';
-import type { AuthResponse } from '@/types/auth';
+import type { AuthResponse, User } from '@/types/auth';
 
-interface User {
-    id: string;
-    name: string;
-    email: string;
-}
+
 
 interface AuthStateType {
     isAuthenticated: boolean;
@@ -47,7 +43,7 @@ const useAuth = () => {
         },
         retry: 0,
         enabled: !!hasHydrated,
-        staleTime: 5 * 60 * 1000
+        staleTime: 5 * 60 * 1000,
     });
 
     useEffect(() => {

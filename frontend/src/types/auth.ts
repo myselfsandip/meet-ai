@@ -1,48 +1,24 @@
+export interface User {
+    id: string;
+    name: string;
+    email: string;
+    image?: string;
+}
+
 export interface SignInCredentials {
     email: string;
     password: string;
 }
 
-export interface LoginResponse {
-    user: {
-        id: string;
-        name: string;
-        email: string;
-    };
-    accessToken: string;
-}
-
-export interface SignUpCredentials {
+export interface SignUpCredentials extends SignInCredentials {
     name: string;
-    email: string;
-    password: string;
-}
-
-export interface SignUpResponse {
-    user: {
-        id: string;
-        name: string;
-        email: string;
-    };
-    accessToken: string;
-}
-
-export interface RefreshResponse {
-    user: {
-        id: string;
-        name: string;
-        email: string;
-    };
-    token: string;
-}
-
-export interface User {
-    id: string;
-    name: string;
-    email: string;
 }
 
 export interface AuthResponse {
-    user: User;
+    user: User
     token: string;
 }
+
+export interface LoginResponse extends AuthResponse { }
+export interface SignUpResponse extends AuthResponse { }
+export interface RefreshResponse extends AuthResponse { }

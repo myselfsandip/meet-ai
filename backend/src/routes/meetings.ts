@@ -4,6 +4,7 @@ import authMiddleware from "../middlewares/authMiddleware";
 
 const router = Router();
 
+router.get('/token', authMiddleware, meetingsController.generateToken);
 router.get('/', authMiddleware, meetingsController.getMeetings);
 router.post('/', authMiddleware, meetingsController.createMeeting);
 router.patch('/', authMiddleware, meetingsController.updateMeeting);

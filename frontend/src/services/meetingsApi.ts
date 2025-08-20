@@ -12,8 +12,8 @@ export const meetingsApi = {
         return response.data;
     },
     getOneMeeting: async (id: string): Promise<MeetingDetailResponse> => {
-        const response = await apiClient.get(`api/meetings/${id}`);
-        const data =  response.data.data;
+        const response = await apiClient.get(`/api/meetings/${id}`);
+        const data = response.data.data;
         return data;
     },
     createMeeting: async (credentials: CreateMeetingDTO): Promise<MeetingModel> => {
@@ -28,4 +28,8 @@ export const meetingsApi = {
         const response = await apiClient.delete(`/api/meetings/${meetingId}`);
         return response.data.data;
     },
+    generateToken: async (): Promise<string> => {
+        const response = await apiClient.get(`/api/meetings/token`);
+        return response.data.token;
+    }
 };

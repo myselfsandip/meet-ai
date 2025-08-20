@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { db } from "../db"
-import { agents, meetings } from "../db/schema"
+import { agents, meetings, users } from "../db/schema"
 import asyncHandler from 'express-async-handler';
 import { ApiResponse } from '../types/api';
 import { and, count, desc, eq, getTableColumns, ilike, sql } from 'drizzle-orm';
@@ -11,6 +11,8 @@ import {
     meetingSchema, meetingsDBResponseArraySchema, meetingsQuerySchema,
     meetingUpdateSchema, MeetingUpdateType
 } from '../validations/meetings';
+import { streamVideo } from '../config/streamVideo';
+import { generateAvatarUri } from '../utils/avatar';
 
 export const getMeetings = asyncHandler(async (req: Request, res: Response) => {
     const userId = (req as any).user.userId;
@@ -113,17 +115,57 @@ export const createMeeting = asyncHandler(async (req: Request, res: Response<Api
     }
     const input: MeetingInsertType = parsedpayload.data;
     const userId = (req as any).user.userId;
-    const [data] = await db.insert(meetings).values({
+    const [createdMeeting] = await db.insert(meetings).values({
         ...input,
         userId: userId
     }).returning();
 
     //TODO: CREATE STREAM CALL , UPSERT STREAM USERS
+    const call = streamVideo.video.call("default", createdMeeting.id);
+    await call.create({
+        data: {
+            created_by_id: String(userId),
+            custom: {
+                meetingId: createdMeeting.id,
+                meetingName: createdMeeting.name
+            },
+            settings_override: {
+                transcription: {
+                    language: "en",
+                    mode: "auto-on",
+                    closed_caption_mode: "auto-on"
+                },
+                recording: {
+                    mode: "auto-on",
+                    quality: "1080p"
+                }
+            }
+        }
+    });
+
+    //Fetch the Agent that this newly created meeting uses
+    const [existingAgent] = await db.select().from(agents).where(eq(agents.id, createdMeeting.agentId));
+
+    if (!existingAgent) {
+        res.status(400).json({
+            success: false,
+            message: 'Agent Not Found!!'
+        })
+    }
+
+    await streamVideo.upsertUsers([
+        {
+            id: existingAgent.id,
+            name: existingAgent.name,
+            role: 'user',
+            image: await generateAvatarUri({ seed: existingAgent.name, variant: 'botttsNeutral' })
+        }
+    ])
 
     res.status(200).json({
         success: true,
         message: "Meeting Created Successfully",
-        data: data
+        data: createdMeeting
     });
 });
 
@@ -188,3 +230,32 @@ export const deleteMeeting = asyncHandler(async (req: Request, res: Response<Api
         data: delMeetingRes[0]
     });
 });
+
+
+export const generateToken = asyncHandler(async (req: Request, res: Response) => {
+    const userId = (req as any).user?.userId;
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    const userIdStr = String(userId);
+    await streamVideo.upsertUsers([
+        {
+            id: userIdStr,
+            name: user.name!,
+            role: 'admin',
+            image: user.image ?? await generateAvatarUri({ seed: user.name!, variant: "initials" })
+        }
+    ]);
+
+    const expirationTime = Math.floor(Date.now() / 1000) + 3600;  //1 hour
+    const issuedAt = Math.floor(Date.now() / 1000) - 60;
+
+    const token = streamVideo.generateUserToken({
+        user_id: userIdStr,
+        exp: expirationTime,
+        iat: issuedAt
+    });
+    res.status(200).json({
+        success: true,
+        message: "Token generated successfully",
+        token: token
+    })
+})
