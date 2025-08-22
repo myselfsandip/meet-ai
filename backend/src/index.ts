@@ -10,6 +10,7 @@ import passport from "passport"
 import auth from "./routes/auth";
 import agentsRoutes from "./routes/agents";
 import meetingsRoutes from "./routes/meetings";
+import webhookRoutes from "./routes/webhookRoutes";
 import { errorHandler } from "./middlewares/errorHandler";
 import { configurePassport } from "./config/passport";
 import { globalLimiter } from "./middlewares/rateLimiting";
@@ -35,6 +36,14 @@ configurePassport();
 app.use("/api/auth", auth);
 app.use("/api/agents", agentsRoutes);
 app.use("/api/meetings", meetingsRoutes);
+app.use("/api/webhook", webhookRoutes);
+
+app.get('/health', (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: "Health 100%"
+    })
+})
 
 
 // Error Handler

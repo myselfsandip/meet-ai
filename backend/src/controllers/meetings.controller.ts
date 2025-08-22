@@ -244,15 +244,7 @@ export const generateToken = asyncHandler(async (req: Request, res: Response) =>
             image: user.image ?? await generateAvatarUri({ seed: user.name!, variant: "initials" })
         }
     ]);
-
-    const expirationTime = Math.floor(Date.now() / 1000) + 3600;  //1 hour
-    const issuedAt = Math.floor(Date.now() / 1000) - 60;
-
-    const token = streamVideo.generateUserToken({
-        user_id: userIdStr,
-        exp: expirationTime,
-        iat: issuedAt
-    });
+    const token = streamVideo.generateUserToken({ user_id: userIdStr });
     res.status(200).json({
         success: true,
         message: "Token generated successfully",
