@@ -120,7 +120,6 @@ export const createMeeting = asyncHandler(async (req: Request, res: Response<Api
         userId: userId
     }).returning();
 
-    //TODO: CREATE STREAM CALL , UPSERT STREAM USERS
     const call = streamVideo.video.call("default", createdMeeting.id);
     await call.create({
         data: {
