@@ -29,7 +29,13 @@ app.use(cors({
     credentials: true,
 }));
 
-app.use(express.json());
+// app.use(express.json());
+app.use(express.json({
+    verify: (req, res, buf) => {
+        (req as any).rawBody = buf.toString();
+    }
+}));
+
 app.use(cookieParser());
 app.use(globalLimiter); //Rate Limiter
 

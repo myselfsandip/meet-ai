@@ -1,5 +1,4 @@
 import { Router, Request, Response } from "express";
-import authMiddleware from "../middlewares/authMiddleware";
 import expressAsyncHandler from "express-async-handler";
 import { and, eq, not } from "drizzle-orm";
 import {
@@ -24,7 +23,7 @@ router.post('/', expressAsyncHandler(async (req: Request, res: Response) => {
         });
         return;
     }
-    const body = await req.body;
+    const body = (req as any).rawBody;
     if (!verifySignatureWithSDK(body, signature)) {
         res.status(401).json({
             success: false,
