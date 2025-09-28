@@ -6,6 +6,7 @@ import { db } from "../db"
 import { signInSchema, signUpSchema } from '../validations/auth';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwtTokens';
 import { users } from '../db/schema';
+import { HTTPSTATUS } from '../config/http.config';
 
 
 
@@ -40,7 +41,7 @@ export const signUp = asyncHandler(async (req: Request, res: Response, next: Nex
         sameSite: 'strict',
         expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000)
     });
-    res.status(200).json({
+    res.status(HTTPSTATUS.OK).json({
         success: true,
         message: 'Sign Up Successfull',
         accessToken,
