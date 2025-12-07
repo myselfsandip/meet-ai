@@ -34,8 +34,9 @@ function SignUp() {
 
     const signUpMutation = useMutation({
         mutationFn: authApi.signup,
-        onSuccess: (data) => {
-            setAuth(data.user, data.accessToken);
+        onSuccess: (data: any) => {
+            const token = data.accessToken || data.token || "";
+            setAuth(data.user, token);
             toast('Welcome!');
             navigate('/overview');
         },
@@ -171,7 +172,7 @@ function SignUp() {
                 variant="outline"
                 className="w-full cursor-pointer"
                 onClick={handleGoogleLogin}
-                >
+            >
                 < ChromeIcon className="mr-2" />  {
                     OAuthLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : 'Continue With Google'
                 }

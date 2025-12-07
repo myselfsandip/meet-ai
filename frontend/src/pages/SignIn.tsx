@@ -34,8 +34,9 @@ export default function SignIn() {
 
     const loginMutation = useMutation({
         mutationFn: authApi.signin,
-        onSuccess: (data) => {
-            setAuth(data.user, data.accessToken);
+        onSuccess: (data: any) => {
+            const token = data.accessToken || data.token || "";
+            setAuth(data.user, token);
             toast.success('Welcome back!');
             navigate('/overview');
         },

@@ -8,6 +8,7 @@ function LandingPage() {
         navigate('/signin');
     }, [navigate]);
 
+    return null; // <--- ADD THIS
 }
 
 export default LandingPage;
