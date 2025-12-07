@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "dev:webhook": "ngrok http --url=uncombustive-overexpressively-farah.ngrok-free.dev 4000",
-    "build": "tsup",
+    "build": "pnpm install && tsup",
     "start": "node dist/index.js",
     "db:push": "drizzle-kit push --config=./src/drizzle.config.ts",
     "db:studio": "drizzle-kit studio --config=./src/drizzle.config.ts",
@@ -29,6 +29,7 @@
     "@types/ws": "^8.18.1",
     "argon2": "^0.43.0",
     "bcrypt": "^6.0.0",
+    "concurrently": "^9.2.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.6.0",
@@ -57,6 +58,7 @@
     "@types/pg": "^8.15.4",
     "drizzle-kit": "^0.31.3",
     "ts-node-dev": "^2.0.0",
+    "tsup": "^8.5.1",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3"
   }
