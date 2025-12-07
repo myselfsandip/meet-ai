@@ -6,6 +6,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
+    "dev:webhook": "ngrok http --url=uncombustive-overexpressively-farah.ngrok-free.dev 4000",
     "build": "tsc",
     "start": "node dist/index.js",
     "db:push": "drizzle-kit push --config=./src/drizzle.config.ts",

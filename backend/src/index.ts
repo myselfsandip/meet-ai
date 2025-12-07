@@ -17,15 +17,28 @@ import { globalLimiter } from "./middlewares/rateLimiting";
 
 const app = express();
 const server = http.createServer(app);
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 
 if (process.env.NODE_ENV !== "production") {
     app.set("trust proxy", 1);
 }
 
+const allowedOrigins = [
+    'http://localhost:5173',
+    'https://uncombustive-overexpressively-farah.ngrok-free.dev', // Allows the ngrok frontend
+    process.env.FRONTEND_URL
+];
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL || 'http://localhost:5173/',
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.log("Blocked by CORS:", origin);
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
 }));
 

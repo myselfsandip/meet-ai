@@ -137,6 +137,11 @@ export const createMeeting = asyncHandler(async (req: Request, res: Response<Api
                 recording: {
                     mode: "auto-on",
                     quality: "1080p"
+                },
+                audio: {
+                    mic_default_on: true, // Force agent mic ON
+                    speaker_default_on: true,
+                    default_device: "speaker"
                 }
             }
         }

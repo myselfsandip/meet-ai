@@ -4,6 +4,7 @@ import { Call, CallingState, StreamCall, StreamVideo, StreamVideoClient } from "
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import { meetingsApi } from "@/services/meetingsApi";
 import CallUI from "./CallUI";
+import { AudioRenderer } from "./ParticipantAudio";
 
 
 interface Props {
@@ -55,6 +56,14 @@ function CallConnect({ meetingId, meetingName, userId, userName, userImage }: Pr
         _call.microphone.disable();
         setCall(_call);
 
+        _call.join({
+            create: false, // You created it via backend already
+            data: { members: [{ user_id: userId }] }
+        }).then(() => {
+            console.log("Joined call successfully");
+        });
+
+
         return () => {
             if (_call.state.callingState !== CallingState.LEFT) {
                 _call.leave();
@@ -77,6 +86,7 @@ function CallConnect({ meetingId, meetingName, userId, userName, userImage }: Pr
     return (
         <StreamVideo client={client}>
             <StreamCall call={call} >
+                <AudioRenderer />
                 <CallUI meetingName={meetingName} />
             </StreamCall>
         </StreamVideo>

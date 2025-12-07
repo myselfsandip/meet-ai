@@ -47,6 +47,7 @@ router.post('/', expressAsyncHandler(async (req: Request, res: Response) => {
         const meetingId = event.call.custom?.meetingId;
 
         if (!meetingId) {
+            console.log('Meeting id missing - webhook');
             res.status(400).json({
                 success: false,
                 message: "Missing meetingId",
@@ -58,7 +59,6 @@ router.post('/', expressAsyncHandler(async (req: Request, res: Response) => {
             and(
                 eq(meetings.id, meetingId),
                 not(eq(meetings.status, "completed")),
-                not(eq(meetings.status, "active")),
                 not(eq(meetings.status, "cancelled")),
                 not(eq(meetings.status, "processing")),
             )
@@ -87,12 +87,27 @@ router.post('/', expressAsyncHandler(async (req: Request, res: Response) => {
             return;
         }
 
+
         const call = streamVideo.video.call("default", meetingId);
+
+        const callState = await call.get();
+
+        // Check if the agent is already in the active participants list
+        const participants = callState.call.session?.participants || [];
+        const isAgentAlreadyJoined = participants.some(
+            (p) => p.user.id === existingAgent.id
+        );
+
+        if (isAgentAlreadyJoined) {
+            console.log(`Agent ${existingAgent.id} already in call, skipping connection.`);
+            res.status(200).json({ status: "ok" });
+            return;
+        }
 
         const realtimeClient = await streamVideo.video.connectOpenAi({
             call,
             openAiApiKey: process.env.OPEN_AI_API_KEY!,
-            agentUserId: existingAgent.id
+            agentUserId: existingAgent.id,
         });
 
         realtimeClient.updateSession({
